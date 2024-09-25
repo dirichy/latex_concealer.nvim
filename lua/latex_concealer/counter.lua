@@ -118,7 +118,6 @@ function M.step_counter(buffer, counter_name)
 end
 
 function M.reset_counter(buffer, counter_name)
-	vim.print(counter_name)
 	M.cache[buffer].counters[counter_name] = 0
 end
 
