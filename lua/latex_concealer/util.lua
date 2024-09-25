@@ -37,13 +37,20 @@ function M.multichar_conceal(start_row, start_col, end_row, end_col, text, names
 	vim.api.nvim_buf_set_extmark(0, namespace_id, start_row, start_col, opts)
 end
 function M.restore(extmark)
-	vim.print(extmark)
-	M.cache.extmark[extmark[1]] = extmark
-	local opts = vim.fn.deepcopy(extmark[4])
-	opts.virt_text = nil
-	opts.conceal = nil
-	opts.id = extmark[1]
-	opts.ns_id = nil
-	vim.api.nvim_buf_set_extmark(0, vim.api.nvim_create_namespace("latex_concealer_list"), extmark[2], extmark[3], opts)
+	if extmark[4].virt_text then
+		M.cache.extmark[extmark[1]] = extmark
+		local opts = vim.fn.deepcopy(extmark[4])
+		opts.virt_text = nil
+		opts.conceal = nil
+		opts.id = extmark[1]
+		opts.ns_id = nil
+		vim.api.nvim_buf_set_extmark(
+			0,
+			vim.api.nvim_create_namespace("latex_concealer_list"),
+			extmark[2],
+			extmark[3],
+			opts
+		)
+	end
 end
 return M
