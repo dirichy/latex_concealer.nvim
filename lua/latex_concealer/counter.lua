@@ -124,9 +124,6 @@ end
 
 function M.item_depth_change(buffer, ordered, direct)
 	local var_to_set = ordered and "enum_depth" or "item_depth"
-	if not M.cache[buffer] then
-		return error(buffer)
-	end
 	if direct == 1 then
 		M.cache[buffer][var_to_set] = M.cache[buffer][var_to_set] + 1
 		M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item + 1] = ordered

@@ -53,19 +53,19 @@ M.config = {
 		section = heading_handler,
 		subsection = heading_handler,
 		subsubsection = heading_handler,
-		begin = function(node, buffer)
+		begin = function(buffer, node)
 			local env_name = vim.treesitter.get_node_text(node:field("name")[1]:field("text")[1], buffer)
 			if M.config.handler.begin[env_name] then
 				return M.config.handler.begin[env_name](buffer)
 			end
 		end,
-		["end"] = function(node, buffer)
+		["end"] = function(buffer, node)
 			local env_name = vim.treesitter.get_node_text(node:field("name")[1]:field("text")[1], buffer)
 			if M.config.handler["end"][env_name] then
 				return M.config.handler["end"][env_name]()
 			end
 		end,
-		enum_item = function(node, buffer)
+		enum_item = function(buffer, node)
 			if counter.cache[buffer].counters.item then
 				counter.cache[buffer].counters.item = counter.cache[buffer].counters.item + 1
 			end
@@ -90,18 +90,18 @@ M.config = {
 		subsection = {},
 		subsubsection = {},
 		begin = {
-			enumerate = function(buffer)
+			enumerate = function(buffer, node)
 				counter.item_depth_change(buffer, true, 1)
 			end,
-			itemize = function(buffer)
+			itemize = function(buffer, node)
 				counter.item_depth_change(buffer, false, 1)
 			end,
 		},
 		["end"] = {
-			enumerate = function(buffer)
+			enumerate = function(buffer, node)
 				counter.item_depth_change(buffer, true, -1)
 			end,
-			itemize = function(buffer)
+			itemize = function(buffer, node)
 				counter.item_depth_change(buffer, false, -1)
 			end,
 		},
