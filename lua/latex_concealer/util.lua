@@ -58,8 +58,12 @@ function M.restore_and_gc()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	row = row - 1
 	for id, extmark in pairs(M.cache.extmark) do
-		local hided_extmark =
-			vim.api.nvim_buf_get_extmark_by_id(0, vim.api.nvim_create_namespace("latex_concealer_list"), id, {})
+		local hided_extmark = vim.api.nvim_buf_get_extmark_by_id(
+			0,
+			vim.api.nvim_create_namespace("latex_concealer_list"),
+			id,
+			{ details = true }
+		)
 		if not hided_extmark then
 			M.cache.extmark[id] = nil
 		else
