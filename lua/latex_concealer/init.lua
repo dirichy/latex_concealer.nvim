@@ -1,7 +1,7 @@
 local M = {}
 local util = require("latex_concealer.util")
 local counter = require("latex_concealer.counter")
-local function heading_handler(node, buffer)
+local function heading_handler(buffer, node)
 	local node_type = node:type()
 	counter.step_counter(buffer, node_type)
 	local row, col = node:range()
@@ -30,7 +30,7 @@ end
 
 M.config = {
 	_handler = {
-		generic_command = function(node, buffer)
+		generic_command = function(buffer, node)
 			local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
 			local expanded
 			if M.config.handler.generic_command[command_name] then
@@ -56,7 +56,7 @@ M.config = {
 		begin = function(buffer, node)
 			local env_name = vim.treesitter.get_node_text(node:field("name")[1]:field("text")[1], buffer)
 			if M.config.handler.begin[env_name] then
-				return M.config.handler.begin[env_name](buffer)
+				return M.config.handler.begin[env_name](buffer, node)
 			end
 		end,
 		["end"] = function(buffer, node)
@@ -144,7 +144,7 @@ function M.conceal(buffer, root)
 	for _, node in query:iter_captures(root, buffer) do
 		local node_type = node:type()
 		if M.config.handler[node_type] then
-			M.config._handler[node_type](node, buffer)
+			M.config._handler[node_type](buffer, node)
 		end
 	end
 end
