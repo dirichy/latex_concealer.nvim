@@ -37,6 +37,7 @@ function M.multichar_conceal(start_row, start_col, end_row, end_col, text, names
 	vim.api.nvim_buf_set_extmark(0, namespace_id, start_row, start_col, opts)
 end
 function M.restore(extmark)
+	vim.print(extmark)
 	M.cache.extmark[extmark[1]] = extmark
 	local opts = vim.fn.deepcopy(extmark[4])
 	opts.virt_text = nil
