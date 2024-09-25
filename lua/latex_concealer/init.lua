@@ -226,6 +226,7 @@ function M.setup_buf(buffer)
 			end,
 		})
 	end
+	counter.setup_buf(buffer)
 	M.refresh(buffer)
 	-- vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { buf = buffer })
 end
