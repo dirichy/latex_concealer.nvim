@@ -88,7 +88,7 @@ function M.setup_buf(buffer, opts)
 				if key == "item" then --counter
 					return M.cache[buffer]._counters[M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]] --counter
 							and M.cache[buffer]._counters[M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]].value --counter
-						or nil --counter
+						or 0 --counter
 				end --counter
 				return M.cache[buffer]._counters[key] and M.cache[buffer]._counters[key].value
 					or error("No counter named " .. key) --counter
