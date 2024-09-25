@@ -36,7 +36,7 @@ function M.multichar_conceal(start_row, start_col, end_row, end_col, text, names
 	end
 	vim.api.nvim_buf_set_extmark(0, namespace_id, start_row, start_col, opts)
 end
-function M.restore(extmark)
+function M.hide_extmark(extmark)
 	if extmark[4].virt_text then
 		M.cache.extmark[extmark[1]] = extmark
 		local opts = vim.fn.deepcopy(extmark[4])
@@ -53,4 +53,26 @@ function M.restore(extmark)
 		)
 	end
 end
+function M.restore_and_gc()
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+	row = row - 1
+	for id, extmark in pairs(M.cache.extmark) do
+		if not vim.api.nvim_buf_get_extmark_by_id(0, vim.api.nvim_create_namespace("latex_concealer_list"), id, {}) then
+			M.cache.extmark[id] = nil
+		end
+		if extmark[2] ~= row or extmark[3] > col + 1 or extmark[4].end_col < col - 1 then
+			extmark[4].ns_id = nil
+			vim.api.nvim_buf_set_extmark(
+				0,
+				vim.api.nvim_create_namespace("latex_concealer_list"),
+				extmark[2],
+				extmark[3],
+				extmark[4]
+			)
+		end
+	end
+end
+vim.api.nvim_create_autocmd("CursorMoved", {
+	callback = M.restore_and_gc,
+})
 return M

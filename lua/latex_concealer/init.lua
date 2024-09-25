@@ -352,7 +352,7 @@ M.cursor_refresh = function()
 		local extstart = extmark[3]
 		local extend = extmark[4].end_col
 		if extstart <= col and col <= extend then
-			util.restore(extmark)
+			util.hide_extmark(extmark)
 		end
 	end
 end
