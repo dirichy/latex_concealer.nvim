@@ -78,7 +78,7 @@ M.config = {
 				col,
 				end_row,
 				end_col,
-				counter.the(buffer, "item"),
+				counter.the(buffer, "item") or ("error: " .. tostring(row) .. tostring(col)),
 				vim.api.nvim_create_namespace("latex_concealer")
 			)
 		end,
