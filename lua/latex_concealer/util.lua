@@ -38,7 +38,10 @@ function M.multichar_conceal(start_row, start_col, end_row, end_col, text, names
 end
 function M.restore(extmark)
 	M.cache.extmark[extmark[1]] = extmark
-	local opts = vim.tbl_extend("force", extmark[4], { virt_text = false, conceal = false, id = extmark[1] })
+	local opts = vim.fn.deepcopy(extmark[4])
+	opts.virt_text = nil
+	opts.conceal = nil
+	opts.id = extmark[1]
 	vim.api.nvim_buf_set_extmark(0, vim.api.nvim_create_namespace("latex_concealer_list"), extmark[2], extmark[3], opts)
 end
 return M
