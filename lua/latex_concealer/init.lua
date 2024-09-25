@@ -63,7 +63,7 @@ M.config = {
 		["end"] = function(buffer, node)
 			local env_name = vim.treesitter.get_node_text(node:field("name")[1]:field("text")[1], buffer)
 			if M.config.handler["end"][env_name] then
-				return M.config.handler["end"][env_name]()
+				return M.config.handler["end"][env_name](buffer, node)
 			end
 		end,
 		enum_item = function(buffer, node)
