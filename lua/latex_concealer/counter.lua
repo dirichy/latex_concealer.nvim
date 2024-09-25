@@ -131,7 +131,7 @@ function M.item_depth_change(buffer, ordered, direct)
 			or M.cache[buffer].item_depth
 	elseif direct == -1 then
 		if ordered then
-			M.reset_counter(buffer, "item")
+			M.reset_counter(buffer, M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item])
 		end
 		M.cache[buffer][var_to_set] = M.cache[buffer][var_to_set] - 1
 		M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item] = nil
