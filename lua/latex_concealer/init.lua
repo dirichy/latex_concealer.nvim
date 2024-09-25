@@ -11,6 +11,7 @@ local function heading_handler(node, buffer)
 			and vim.treesitter.get_node_text(curly_group_node:named_child(0), buffer)
 		or ""
 	util.multichar_conceal(
+		buffer,
 		row,
 		col,
 		end_row,
@@ -38,6 +39,7 @@ M.config = {
 			if expanded then
 				local row, col, end_row, end_col = node:range()
 				util.multichar_conceal(
+					buffer,
 					row,
 					col,
 					end_row,
@@ -70,6 +72,7 @@ M.config = {
 			node = node:child(0)
 			local row, col, end_row, end_col = node:range()
 			util.multichar_conceal(
+				buffer,
 				row,
 				col,
 				end_row,

@@ -89,6 +89,7 @@ return {
 			local row1_end, col1_end, row2, col2 = arg1_node:range()
 			local row2_end, col2_end, row3, col3 = arg2_node:range()
 			util.multichar_conceal(
+				buffer,
 				row1,
 				col1,
 				row1_end,
@@ -97,6 +98,7 @@ return {
 				vim.api.nvim_create_namespace("latex_concealer_list")
 			)
 			util.multichar_conceal(
+				buffer,
 				row2,
 				col2 - 1,
 				row2_end,
@@ -105,6 +107,7 @@ return {
 				vim.api.nvim_create_namespace("latex_concealer_list")
 			)
 			util.multichar_conceal(
+				buffer,
 				row3,
 				col3 - 1,
 				row3,
