@@ -62,6 +62,7 @@ function M.restore_and_gc()
 			M.cache.extmark[id] = nil
 		end
 		if extmark[1] ~= row or extmark[2] > col + 1 or extmark[4] < col then
+			vim.print(extmark)
 			M.multichar_conceal(
 				extmark[1],
 				extmark[2],
