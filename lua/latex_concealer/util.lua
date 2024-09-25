@@ -61,7 +61,7 @@ function M.hide_extmark(extmark, buffer)
 end
 
 function M.restore_and_gc(buffer)
-	local row, col = unpack(vim.api.nvim_win_get_cursor(buffer))
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	row = row - 1
 	for id, extmark in pairs(M.cache[buffer].extmark) do
 		local hided_extmark = vim.api.nvim_buf_get_extmark_by_id(

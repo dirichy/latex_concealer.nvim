@@ -163,7 +163,7 @@ end
 
 M.cursor_refresh = function(buffer)
 	util.restore_and_gc(buffer)
-	local row, col = unpack(vim.api.nvim_win_get_cursor(buffer))
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	row = row - 1
 	local extmarks = vim.api.nvim_buf_get_extmarks(
 		buffer,
