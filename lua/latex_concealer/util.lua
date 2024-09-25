@@ -4,6 +4,8 @@ M.cache = {}
 M.config = {
 	extmark = {
 		virt_text_pos = "inline",
+		invalidate = true,
+		undo_restore = false,
 		conceal = "",
 	},
 }
@@ -75,7 +77,6 @@ function M.restore_and_gc(buffer)
 		if not hided_extmark then
 			M.cache[buffer].extmark[id] = nil
 		else
-			vim.print(hided_extmark)
 			if hided_extmark[1] ~= row or hided_extmark[2] > col + 1 or hided_extmark[3].end_col < col then
 				M.multichar_conceal(
 					buffer,
