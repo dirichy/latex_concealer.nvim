@@ -73,7 +73,4 @@ function M.restore_and_gc()
 		end
 	end
 end
-vim.api.nvim_create_autocmd("CursorMoved", {
-	callback = M.restore_and_gc,
-})
 return M
