@@ -38,9 +38,8 @@ function M.multichar_conceal(start_row, start_col, end_row, end_col, text, names
 end
 function M.hide_extmark(extmark)
 	if extmark[4].virt_text then
-		M.cache.extmark[extmark[1]] =
-			{ extmark[2], extmark[3], extmark[4].end_row, extmark[4].end_col, extmark[4].virt_text }
-		local opts = vim.fn.deepcopy(extmark[4])
+		M.cache.extmark[extmark[1]] = vim.fn.copy(extmark[4].virt_text)
+		local opts = extmark[4]
 		opts.virt_text = nil
 		opts.conceal = nil
 		opts.id = extmark[1]
@@ -54,24 +53,28 @@ function M.hide_extmark(extmark)
 		)
 	end
 end
+
 function M.restore_and_gc()
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	row = row - 1
 	for id, extmark in pairs(M.cache.extmark) do
-		if not vim.api.nvim_buf_get_extmark_by_id(0, vim.api.nvim_create_namespace("latex_concealer_list"), id, {}) then
+		local hided_extmark =
+			vim.api.nvim_buf_get_extmark_by_id(0, vim.api.nvim_create_namespace("latex_concealer_list"), id, {})
+		if not hided_extmark then
 			M.cache.extmark[id] = nil
-		end
-		if extmark[1] ~= row or extmark[2] > col + 1 or extmark[4] < col then
-			M.multichar_conceal(
-				extmark[1],
-				extmark[2],
-				extmark[3],
-				extmark[4],
-				extmark[5][1],
-				vim.api.nvim_create_namespace("latex_concealer_list"),
-				{ id = id }
-			)
-			M.cache.extmark[id] = nil
+		else
+			if hided_extmark[2] ~= row or hided_extmark[3] > col + 1 or hided_extmark[4].end_col < col then
+				M.multichar_conceal(
+					hided_extmark[2],
+					hided_extmark[3],
+					hided_extmark[4].end_row,
+					hided_extmark[4].end_col,
+					extmark[1],
+					vim.api.nvim_create_namespace("latex_concealer_list"),
+					{ id = id }
+				)
+				M.cache.extmark[id] = nil
+			end
 		end
 	end
 end
