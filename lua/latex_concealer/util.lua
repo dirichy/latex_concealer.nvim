@@ -1,5 +1,5 @@
 local M = {}
-local concealer = require("latex_concealer")
+M.cache = {}
 M.config = {
 	extmark = {
 		-- virt_text = { { list_icon_formatter(depth, index), "@keyword" } },
@@ -37,7 +37,7 @@ function M.multichar_conceal(start_row, start_col, end_row, end_col, text, names
 	vim.api.nvim_buf_set_extmark(0, namespace_id, start_row, start_col, opts)
 end
 function M.restore(extmark)
-	concealer.cache.extmark[extmark[1]] = extmark
+	M.cache.extmark[extmark[1]] = extmark
 	-- vim.api.nvim_buf_set_extmark(0, vim.api.nvim_)
 end
 return M
