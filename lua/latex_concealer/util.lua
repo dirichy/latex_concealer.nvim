@@ -67,12 +67,13 @@ function M.restore_and_gc()
 		if not hided_extmark then
 			M.cache.extmark[id] = nil
 		else
-			if hided_extmark[2] ~= row or hided_extmark[3] > col + 1 or hided_extmark[4].end_col < col then
+			vim.print(hided_extmark)
+			if hided_extmark[1] ~= row or hided_extmark[2] > col + 1 or hided_extmark[3].end_col < col then
 				M.multichar_conceal(
+					hided_extmark[1],
 					hided_extmark[2],
-					hided_extmark[3],
-					hided_extmark[4].end_row,
-					hided_extmark[4].end_col,
+					hided_extmark[3].end_row,
+					hided_extmark[3].end_col,
 					extmark[1],
 					vim.api.nvim_create_namespace("latex_concealer_list"),
 					{ id = id }
