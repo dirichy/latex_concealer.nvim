@@ -107,7 +107,7 @@ function M.setup_buf(buffer, opts)
 				end --counter
 			end, --counter
 		}), --counter
-		_counters = vim.tbl_deep_extend("force", vim.fn.deepcopy(M.config._counters), opts._counters),
+		_counters = vim.tbl_deep_extend("force", vim.fn.deepcopy(M.config._counters), opts and opts._counters or {}),
 	}
 end
 
