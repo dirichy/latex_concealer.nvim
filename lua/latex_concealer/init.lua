@@ -176,7 +176,7 @@ M.cursor_refresh = function(buffer)
 		local extstart = extmark[3]
 		local extend = extmark[4].end_col
 		if extstart <= col and col <= extend then
-			util.hide_extmark(extmark)
+			util.hide_extmark(extmark, buffer)
 		end
 	end
 end
