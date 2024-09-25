@@ -46,6 +46,9 @@ function M.hide_extmark(extmark, buffer)
 	if extmark[4].virt_text then
 		M.cache[buffer].extmark[extmark[1]] = vim.fn.copy(extmark[4].virt_text)
 		local opts = extmark[4]
+		if opts.invalid then
+			return
+		end
 		opts.virt_text = nil
 		opts.conceal = nil
 		opts.id = extmark[1]
