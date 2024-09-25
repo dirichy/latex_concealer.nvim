@@ -1,5 +1,5 @@
 local M = {}
-M.cache = {}
+M.cache = { extmark = {} }
 M.config = {
 	extmark = {
 		-- virt_text = { { list_icon_formatter(depth, index), "@keyword" } },
