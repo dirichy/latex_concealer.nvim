@@ -60,7 +60,7 @@ function M.restore_and_gc()
 		if not vim.api.nvim_buf_get_extmark_by_id(0, vim.api.nvim_create_namespace("latex_concealer_list"), id, {}) then
 			M.cache.extmark[id] = nil
 		end
-		if extmark[2] ~= row or extmark[3] > col + 1 or extmark[4].end_col < col - 1 then
+		if extmark[2] ~= row or extmark[3] > col + 1 or extmark[4].end_col < col then
 			extmark[4].ns_id = nil
 			vim.api.nvim_buf_set_extmark(
 				0,
