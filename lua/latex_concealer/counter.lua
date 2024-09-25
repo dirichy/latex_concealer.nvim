@@ -40,8 +40,9 @@ M.cache = {}
 function M.the(buffer, counter_name, heading)
 	heading = heading or ""
 	local counters = M.cache[buffer].counters
+	local _counters = M.cache[buffer]._counters
 	if counter_name == "item" then --counter
-		counter_name = counters.item[#counters.item] --counter
+		counter_name = _counters.item[#_counters.item] --counter
 		if type(counter_name) == "number" then --counter
 			return M.config.unordered[counter_name] --counter
 		else --counter
