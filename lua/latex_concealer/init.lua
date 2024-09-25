@@ -206,6 +206,7 @@ end
 M.local_refresh = M.refresh
 function M.setup_buf(buffer)
 	buffer = buffer and (type(buffer) == "number" and buffer or buffer.buf) or vim.api.nvim_get_current_buf()
+	vim.print(buffer)
 	if M.config.refresh_events then
 		vim.api.nvim_create_autocmd(M.config.refresh_events, {
 			buffer = buffer,
