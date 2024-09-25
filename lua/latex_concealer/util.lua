@@ -38,6 +38,12 @@ function M.multichar_conceal(start_row, start_col, end_row, end_col, text, names
 end
 function M.restore(extmark)
 	M.cache.extmark[extmark[1]] = extmark
-	-- vim.api.nvim_buf_set_extmark(0, vim.api.nvim_)
+	vim.api.nvim_buf_set_extmark(
+		0,
+		vim.api.nvim_create_namespace("latex_concealer_list"),
+		extmark[2],
+		extmark[3],
+		{ virt_text = nil, conceal = nil, id = extmark[1] }
+	)
 end
 return M
