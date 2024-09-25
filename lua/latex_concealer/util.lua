@@ -74,7 +74,7 @@ function M.restore_and_gc(buffer)
 			id,
 			{ details = true }
 		)
-		if not hided_extmark then
+		if not hided_extmark or not extmark[3] then
 			M.cache[buffer].extmark[id] = nil
 		else
 			if hided_extmark[1] ~= row or hided_extmark[2] > col + 1 or hided_extmark[3].end_col < col then
@@ -82,7 +82,7 @@ function M.restore_and_gc(buffer)
 					buffer,
 					hided_extmark[1],
 					hided_extmark[2],
-					hided_extmark[3].end_row or hided_extmark[1],
+					hided_extmark[3].end_row,
 					hided_extmark[3].end_col,
 					extmark[1],
 					vim.api.nvim_create_namespace("latex_concealer"),
