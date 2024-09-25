@@ -95,7 +95,7 @@ return {
 				row1_end,
 				col1_end + 1,
 				{ "(", "Special" },
-				vim.api.nvim_create_namespace("latex_concealer_list")
+				vim.api.nvim_create_namespace("latex_concealer")
 			)
 			util.multichar_conceal(
 				buffer,
@@ -104,7 +104,7 @@ return {
 				row2_end,
 				col2_end + 1,
 				{ ")/(", "Special" },
-				vim.api.nvim_create_namespace("latex_concealer_list")
+				vim.api.nvim_create_namespace("latex_concealer")
 			)
 			util.multichar_conceal(
 				buffer,
@@ -113,7 +113,7 @@ return {
 				row3,
 				col3,
 				{ ")", "Special" },
-				vim.api.nvim_create_namespace("latex_concealer_list")
+				vim.api.nvim_create_namespace("latex_concealer")
 			)
 		end
 		return nil

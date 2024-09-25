@@ -17,7 +17,7 @@ local function heading_handler(node, buffer)
 		end_row,
 		end_col,
 		counter.cache[buffer].counters:formatter(node_type, heading),
-		vim.api.nvim_create_namespace("latex_concealer_list")
+		vim.api.nvim_create_namespace("latex_concealer")
 	)
 end
 local function command_expand(buffer, cmd, node)
@@ -45,7 +45,7 @@ M.config = {
 					end_row,
 					end_col,
 					expanded,
-					vim.api.nvim_create_namespace("latex_concealer_list")
+					vim.api.nvim_create_namespace("latex_concealer")
 				)
 			end
 		end,
@@ -78,7 +78,7 @@ M.config = {
 				end_row,
 				end_col,
 				counter.cache[buffer].counters:formatter("item"),
-				vim.api.nvim_create_namespace("latex_concealer_list")
+				vim.api.nvim_create_namespace("latex_concealer")
 			)
 		end,
 	},
@@ -122,7 +122,7 @@ M.config = {
 -- 			row = item_node:range()
 -- 			vim.api.nvim_buf_clear_namespace(
 -- 				buffer,
--- 				vim.api.nvim_create_namespace("latex_concealer_list"),
+-- 				vim.api.nvim_create_namespace("latex_concealer"),
 -- 				row,
 -- 				row + 1
 -- 			)
@@ -155,7 +155,7 @@ function M.refresh(buffer)
 		200,
 		0,
 		vim.schedule_wrap(function()
-			-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer_list"), 0, -1)
+			-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer"), 0, -1)
 			M.conceal(buffer)
 		end)
 	)
@@ -167,7 +167,7 @@ M.cursor_refresh = function(buffer)
 	row = row - 1
 	local extmarks = vim.api.nvim_buf_get_extmarks(
 		buffer,
-		vim.api.nvim_create_namespace("latex_concealer_list"),
+		vim.api.nvim_create_namespace("latex_concealer"),
 		{ row, 0 },
 		{ row, col },
 		{ details = true }
@@ -194,7 +194,7 @@ end
 -- 					if env_name == "itemize" or env_name == "enumerate" then
 -- 						M.deconceal_environment(node)
 -- 						M.conceal_environment(node, env_name == "enumerate")
--- 						-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer_list"), row, end_row)
+-- 						-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer"), row, end_row)
 -- 						break
 -- 					end
 -- 				end
@@ -230,6 +230,7 @@ function M.setup_buf(buffer)
 		})
 	end
 	counter.setup_buf(buffer)
+	util.setup_buf(buffer)
 	M.refresh(buffer)
 	-- vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { buf = buffer })
 end

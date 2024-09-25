@@ -1,5 +1,6 @@
 local M = {}
-M.cache = { extmark = {} }
+---@type table<number,table>
+M.cache = {}
 M.config = {
 	extmark = {
 		virt_text_pos = "inline",
@@ -29,11 +30,12 @@ function M.multichar_conceal(buffer, start_row, start_col, end_row, end_col, tex
 	for _, extmark in ipairs(extmarks) do
 		if extmark[2] == start_row and extmark[3] == start_col then
 			opts.id = extmark[1]
+			M.cache[buffer].extmark[extmark[1]] = nil
 		end
 	end
 	vim.api.nvim_buf_set_extmark(
 		buffer,
-		namespace_id or vim.api.nvim_create_namespace("latex_concealer_list"),
+		namespace_id or vim.api.nvim_create_namespace("latex_concealer"),
 		start_row,
 		start_col,
 		opts
@@ -42,7 +44,7 @@ end
 
 function M.hide_extmark(extmark, buffer)
 	if extmark[4].virt_text then
-		M.cache.extmark[extmark[1]] = vim.fn.copy(extmark[4].virt_text)
+		M.cache[buffer].extmark[extmark[1]] = vim.fn.copy(extmark[4].virt_text)
 		local opts = extmark[4]
 		opts.virt_text = nil
 		opts.conceal = nil
@@ -50,7 +52,7 @@ function M.hide_extmark(extmark, buffer)
 		opts.ns_id = nil
 		vim.api.nvim_buf_set_extmark(
 			buffer,
-			vim.api.nvim_create_namespace("latex_concealer_list"),
+			vim.api.nvim_create_namespace("latex_concealer"),
 			extmark[2],
 			extmark[3],
 			opts
@@ -61,15 +63,15 @@ end
 function M.restore_and_gc(buffer)
 	local row, col = unpack(vim.api.nvim_win_get_cursor(buffer))
 	row = row - 1
-	for id, extmark in pairs(M.cache.extmark) do
+	for id, extmark in pairs(M.cache[buffer].extmark) do
 		local hided_extmark = vim.api.nvim_buf_get_extmark_by_id(
 			buffer,
-			vim.api.nvim_create_namespace("latex_concealer_list"),
+			vim.api.nvim_create_namespace("latex_concealer"),
 			id,
 			{ details = true }
 		)
 		if not hided_extmark then
-			M.cache.extmark[id] = nil
+			M.cache[buffer].extmark[id] = nil
 		else
 			vim.print(hided_extmark)
 			if hided_extmark[1] ~= row or hided_extmark[2] > col + 1 or hided_extmark[3].end_col < col then
@@ -80,12 +82,15 @@ function M.restore_and_gc(buffer)
 					hided_extmark[3].end_row,
 					hided_extmark[3].end_col,
 					extmark[1],
-					vim.api.nvim_create_namespace("latex_concealer_list"),
+					vim.api.nvim_create_namespace("latex_concealer"),
 					{ id = id }
 				)
-				M.cache.extmark[id] = nil
+				M.cache[buffer].extmark[id] = nil
 			end
 		end
 	end
+end
+function M.setup_buf(buffer)
+	M.cache[buffer] = { extmark = {} }
 end
 return M

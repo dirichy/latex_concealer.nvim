@@ -74,7 +74,7 @@ M.config = {
 -- 		end_row,
 -- 		end_col,
 -- 		list_icon_formatter(depth, index),
--- 		vim.api.nvim_create_namespace("latex_concealer_list")
+-- 		vim.api.nvim_create_namespace("latex_concealer")
 -- 	)
 -- end
 
@@ -112,7 +112,7 @@ function M.deconceal_environment(enum_node)
 		if item:type() == "enum_item" then
 			item_node = item:child(0)
 			row = item_node:range()
-			vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer_list"), row, row + 1)
+			vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer"), row, row + 1)
 		end
 	end
 end
@@ -213,7 +213,7 @@ function M.conceal(root)
 				end_row,
 				end_col,
 				counters:formatter(node_type, heading),
-				vim.api.nvim_create_namespace("latex_concealer_list")
+				vim.api.nvim_create_namespace("latex_concealer")
 			)
 		end
 		local enums = { "enumi", "enumii", "enumiii", "enumiv" }
@@ -255,7 +255,7 @@ function M.conceal(root)
 				end_row,
 				end_col,
 				counters:formatter("item"),
-				vim.api.nvim_create_namespace("latex_concealer_list")
+				vim.api.nvim_create_namespace("latex_concealer")
 			)
 		end
 	end
@@ -266,7 +266,7 @@ function M.refresh()
 		200,
 		0,
 		vim.schedule_wrap(function()
-			vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer_list"), 0, -1)
+			vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer"), 0, -1)
 			M.conceal()
 		end)
 	)
@@ -286,7 +286,7 @@ end
 -- 					if env_name == "itemize" or env_name == "enumerate" then
 -- 						M.deconceal_environment(node)
 -- 						M.conceal_environment(node, env_name == "enumerate")
--- 						-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer_list"), row, end_row)
+-- 						-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer"), row, end_row)
 -- 						break
 -- 					end
 -- 				end
