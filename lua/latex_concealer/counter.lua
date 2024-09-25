@@ -27,6 +27,7 @@ M.config = {
 		enumii = { value = 0, refresh = { "enumiii" } },
 		enumiii = { value = 0, refresh = { "enumiv" } },
 		enumiv = { value = 0 },
+		error = { value = 0 },
 		chapter = { value = 0, refresh = { "section" } },
 		section = { value = 0, refresh = { "subsection" } },
 		subsection = { value = 0, refresh = { "subsubsection" } },
@@ -126,7 +127,7 @@ function M.item_depth_change(buffer, ordered, direct)
 	if direct == 1 then
 		M.cache[buffer][var_to_set] = M.cache[buffer][var_to_set] + 1
 		M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item + 1] = ordered
-				and enums[M.cache[buffer].enum_depth]
+				and (enums[M.cache[buffer].enum_depth] or "error")
 			or M.cache[buffer].item_depth
 	elseif direct == -1 then
 		if ordered then
