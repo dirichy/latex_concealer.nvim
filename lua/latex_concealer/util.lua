@@ -69,6 +69,7 @@ function M.restore_and_gc()
 				extmark[3],
 				extmark[4]
 			)
+			M.cache.extmark[id] = nil
 		end
 	end
 end
