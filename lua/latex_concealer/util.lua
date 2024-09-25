@@ -75,6 +75,7 @@ function M.restore_and_gc(buffer)
 			{ details = true }
 		)
 		if not hided_extmark or not extmark[3] then
+			vim.print("delete restore")
 			M.cache[buffer].extmark[id] = nil
 		else
 			if hided_extmark[1] ~= row or hided_extmark[2] > col + 1 or hided_extmark[3].end_col < col then
