@@ -5,7 +5,6 @@ M.config = {
 	extmark = {
 		virt_text_pos = "inline",
 		conceal = "",
-		invalidate = true,
 	},
 }
 function M.clear(node, buffer)
