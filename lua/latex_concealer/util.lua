@@ -11,7 +11,7 @@ function M.clear(node, buffer)
 	local start_row, _, end_row = node and node:range() or 0, 0, -1
 	vim.api.nvim_buf_clear_namespace(buffer, vim.api.nvim_create_namespace("concealer_latex"), start_row, end_row)
 end
-function M.multichar_conceal(start_row, start_col, end_row, end_col, text, namespace_id, user_opts, buffer)
+function M.multichar_conceal(buffer, start_row, start_col, end_row, end_col, text, namespace_id, user_opts)
 	local opts = vim.fn.deepcopy(M.config.extmark)
 	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
 	opts.virt_text = type(text) == "string" and { { text, "Conceal" } }
@@ -74,6 +74,7 @@ function M.restore_and_gc(buffer)
 			vim.print(hided_extmark)
 			if hided_extmark[1] ~= row or hided_extmark[2] > col + 1 or hided_extmark[3].end_col < col then
 				M.multichar_conceal(
+					buffer,
 					hided_extmark[1],
 					hided_extmark[2],
 					hided_extmark[3].end_row,
