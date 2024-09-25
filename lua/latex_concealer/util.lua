@@ -42,6 +42,7 @@ function M.restore(extmark)
 	opts.virt_text = nil
 	opts.conceal = nil
 	opts.id = extmark[1]
+	opts.ns_id = nil
 	vim.api.nvim_buf_set_extmark(0, vim.api.nvim_create_namespace("latex_concealer_list"), extmark[2], extmark[3], opts)
 end
 return M
