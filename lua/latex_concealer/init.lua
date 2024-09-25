@@ -16,7 +16,7 @@ local function heading_handler(node, buffer)
 		col,
 		end_row,
 		end_col,
-		counter.cache[buffer].counters:formatter(node_type, heading),
+		counter.the(buffer, node_type, heading),
 		vim.api.nvim_create_namespace("latex_concealer")
 	)
 end
@@ -77,7 +77,7 @@ M.config = {
 				col,
 				end_row,
 				end_col,
-				counter.cache[buffer].counters:formatter("item"),
+				counter.the(buffer, "item"),
 				vim.api.nvim_create_namespace("latex_concealer")
 			)
 		end,

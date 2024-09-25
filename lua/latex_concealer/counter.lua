@@ -37,7 +37,8 @@ M.config = {
 
 M.cache = {}
 
-function M.the(buffer, counter_name)
+function M.the(buffer, counter_name, heading)
+	heading = heading or ""
 	local counters = M.cache[buffer].counters
 	if counter_name == "item" then --counter
 		counter_name = counters.item[#counters.item] --counter
@@ -63,7 +64,7 @@ function M.the(buffer, counter_name)
 			function(numbering, count) --counter
 				return M.config.numbering[numbering](counters[count] or 0) --counter
 			end --counter
-		), --counter
+		) .. heading, --counter
 		M.config.the[counter_name][2], --counter
 	} --counter
 end
