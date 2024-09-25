@@ -1,4 +1,5 @@
 local M = {}
+M.cache = {}
 local util = require("latex_concealer.util")
 local counter = require("latex_concealer.counter")
 local function heading_handler(buffer, node)
@@ -205,8 +206,11 @@ end
 -- end
 M.local_refresh = M.refresh
 function M.setup_buf(buffer)
+	if M.cache[buffer] then
+		return
+	end
+	M.cache[buffer] = true
 	buffer = buffer and (type(buffer) == "number" and buffer or buffer.buf) or vim.api.nvim_get_current_buf()
-	vim.print(buffer)
 	if M.config.refresh_events then
 		vim.api.nvim_create_autocmd(M.config.refresh_events, {
 			buffer = buffer,
