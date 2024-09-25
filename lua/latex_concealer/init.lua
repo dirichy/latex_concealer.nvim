@@ -205,6 +205,7 @@ end
 -- end
 M.local_refresh = M.refresh
 function M.setup_buf(buffer)
+	buffer = buffer or 0
 	if M.config.refresh_events then
 		vim.api.nvim_create_autocmd(M.config.refresh_events, {
 			buffer = buffer,
@@ -232,12 +233,16 @@ function M.setup_buf(buffer)
 	counter.setup_buf(buffer)
 	util.setup_buf(buffer)
 	M.refresh(buffer)
-	-- vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { buf = buffer })
+	vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { scope = "local" })
 end
 
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts)
 	M.config.handler.generic_command = require("latex_concealer.handler.symbol")
+	vim.api.nvim_create_autocmd("BufEnter", {
+		pattern = "*.tex",
+		callback = M.setup_buf(),
+	})
 end
 
 return M
