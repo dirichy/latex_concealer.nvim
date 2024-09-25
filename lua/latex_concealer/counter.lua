@@ -14,14 +14,14 @@ M.config = {
 		enumi = { "\\zhdig{section}.\\Roman{enumi}.", "ErrorMsg" },
 		enumii = { "\\Roman{enumi}.\\Alph{enumii}", "Constant" },
 		enumiii = { "\\Roman{enumi}.\\Alph{enumii}(\\zhdig{enumiii})", "DiagnosticHint" },
-		enumiv = { "\\fnsymbol{enumiv}", "SpecialKey" },
+		enumiv = { "\\fnsymbol{enumiv}", "Special" },
 		error = { "DON'T NEST LIST MORE THAN FOUR LAYER", "ErrorMsg" },
 	},
 	unordered = {
 		{ "o", "ErrorMsg" },
 		{ "-", "Constant" },
 		{ "+", "DiagnosticHint" },
-		{ "=", "SpecialKey" },
+		{ "=", "Special" },
 		{ "DON'T NEST LIST MORE THAN FOUR LAYER", "ErrorMsg" },
 	},
 	_counters = {
