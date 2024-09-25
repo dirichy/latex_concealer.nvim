@@ -242,7 +242,7 @@ function M.setup(opts)
 	M.setup_buf(0)
 	vim.api.nvim_create_autocmd("BufEnter", {
 		pattern = "*.tex",
-		callback = M.setup_buf(),
+		callback = M.setup_buf,
 	})
 end
 
