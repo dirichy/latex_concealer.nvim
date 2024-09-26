@@ -250,6 +250,7 @@ end
 
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts)
+	counter.setup(M.config.counter)
 	M.config.handler.generic_command = require("latex_concealer.handler.symbol")
 	M.setup_buf(0)
 	vim.api.nvim_create_autocmd("BufEnter", {
