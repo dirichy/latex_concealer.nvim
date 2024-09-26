@@ -64,7 +64,9 @@ function M.hide_extmark(extmark, buffer)
 		)
 	end
 end
-
+function M.delete_all(buffer)
+	M.cache[buffer].extmark = {}
+end
 function M.restore_and_gc(buffer)
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	row = row - 1
