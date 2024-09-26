@@ -13,6 +13,7 @@ function M.clear(node, buffer)
 	local start_row, _, end_row = node and node:range() or 0, 0, -1
 	vim.api.nvim_buf_clear_namespace(buffer, vim.api.nvim_create_namespace("concealer_latex"), start_row, end_row)
 end
+
 function M.multichar_conceal(buffer, start_row, start_col, end_row, end_col, text, namespace_id, user_opts)
 	local opts = vim.fn.deepcopy(M.config.extmark)
 	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
@@ -61,6 +62,7 @@ function M.hide_extmark(extmark, buffer)
 			extmark[3],
 			opts
 		)
+		vim.api.nvim_buf_del_extmark(buffer, vim.api.nvim_create_namespace("latex_concealer"), extmark[1])
 	end
 end
 

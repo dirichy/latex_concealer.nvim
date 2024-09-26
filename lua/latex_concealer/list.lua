@@ -272,28 +272,17 @@ function M.refresh()
 	)
 end
 
--- function M.local_refresh()
--- 	local timer = vim.uv.new_timer()
--- 	timer:start(
--- 		200,
--- 		0,
--- 		vim.schedule_wrap(function()
--- 			local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
--- 			while node do
--- 				if node:type() == "generic_environment" then
--- 					local env_name =
--- 						vim.treesitter.get_node_text(node:field("begin")[1]:field("name")[1]:field("text")[1], 0)
--- 					if env_name == "itemize" or env_name == "enumerate" then
--- 						M.deconceal_environment(node)
--- 						M.conceal_environment(node, env_name == "enumerate")
--- 						-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer"), row, end_row)
--- 						break
--- 					end
--- 				end
--- 				node = node:parent()
--- 			end
--- 		end)
--- 	)
+-- function M.local_refresh(buffer)
+-- 	local node = vim.treesitter.get_node({
+-- 		pos = {
+-- 			vim.api.nvim_win_get_cursor(0)[1] - 1,
+-- 			vim.api.nvim_win_get_cursor(0)[2] > 0 and (vim.api.nvim_win_get_cursor(0)[2] - 1)
+-- 				or vim.api.nvim_win_get_cursor(0)[2],
+-- 		},
+-- 	})
+--   if node:type()=="command_name" then
+--
+--   end
 -- end
 M.local_refresh = M.refresh
 function M.setup(opts)

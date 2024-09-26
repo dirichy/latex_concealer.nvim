@@ -36,6 +36,9 @@ M.config = {
 			local expanded
 			if M.config.handler.generic_command[command_name] then
 				expanded = command_expand(buffer, command_name, node)
+				-- else
+				-- 	util.delete_extmark(buffer, node)
+				-- 	return
 			end
 			if expanded then
 				local row, col, end_row, end_col = node:range()
@@ -174,6 +177,8 @@ M.cursor_refresh = function(buffer)
 		{ row, col },
 		{ details = true }
 	)
+	-- col=col-1
+	-- local node=vim.treesitter.get_node({buffer=buffer,pos={row,col}})
 	for _, extmark in ipairs(extmarks) do
 		local extstart = extmark[3]
 		local extend = extmark[4].end_col
