@@ -159,7 +159,7 @@ function M.refresh(buffer)
 		200,
 		0,
 		vim.schedule_wrap(function()
-			-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer"), 0, -1)
+			vim.api.nvim_buf_clear_namespace(buffer, vim.api.nvim_create_namespace("latex_concealer"), 0, -1)
 			counter.reset_all(buffer)
 			M.conceal(buffer)
 		end)

@@ -62,7 +62,6 @@ function M.hide_extmark(extmark, buffer)
 			extmark[3],
 			opts
 		)
-		vim.api.nvim_buf_del_extmark(buffer, vim.api.nvim_create_namespace("latex_concealer"), extmark[1])
 	end
 end
 
