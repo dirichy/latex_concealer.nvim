@@ -11,7 +11,7 @@ function M.conceal_commands(opts)
 		end
 		local row1, col1 = command_name:range()
 		local row1_end, col1_end, row2, col2
-		for index, arg_node in ipairs(node:field("arg")) do
+		for index, arg_node in ipairs(arg_nodes) do
 			row1_end, col1_end, row2, col2 = arg_node:range()
 			util.multichar_conceal(
 				buffer,
@@ -24,6 +24,9 @@ function M.conceal_commands(opts)
 			)
 			if opts.map[index] then
 				local text = vim.treesitter.get_node_text(arg_node, buffer)
+				if not text then
+					vim.print(buffer, arg_node:range())
+				end
 				util.multichar_conceal(
 					buffer,
 					row1_end,
