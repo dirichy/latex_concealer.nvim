@@ -21,14 +21,14 @@ function M.conceal(opts)
 				vim.api.nvim_create_namespace("latex_concealer")
 			)
 			row1 = row2
-			col1 = col2
+			col1 = col2 - 1
 		end
 		util.multichar_conceal(
 			buffer,
 			row1,
-			col1 - 1,
-			row1,
 			col1,
+			row1,
+			col1 + 1,
 			opts[#opts],
 			vim.api.nvim_create_namespace("latex_concealer")
 		)
