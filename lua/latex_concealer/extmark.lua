@@ -17,7 +17,7 @@ end
 
 function M.multichar_conceal(buffer, range, text, user_opts)
 	local start_row, start_col, end_row, end_col
-	local ns_id = user_opts.ns_id
+	local ns_id = user_opts and user_opts.ns_id or M.config.ns_id
 	user_opts.ns_id = nil
 	if range[1] then
 		start_row, start_col, end_row, end_col = unpack(range)
@@ -40,7 +40,7 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 	opts.end_col = end_col
 	local extmarks = vim.api.nvim_buf_get_extmarks(
 		buffer,
-		ns_id or M.config.ns_id,
+		ns_id,
 		{ start_row, start_col },
 		{ end_row, end_col },
 		{ details = true }
@@ -51,7 +51,7 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 			M.cache[buffer].extmark[extmark[1]] = nil
 		end
 	end
-	vim.api.nvim_buf_set_extmark(buffer, ns_id or M.config.ns_id, start_row, start_col, opts)
+	vim.api.nvim_buf_set_extmark(buffer, ns_id, start_row, start_col, opts)
 end
 
 function M.hide_extmark(extmark, buffer)
