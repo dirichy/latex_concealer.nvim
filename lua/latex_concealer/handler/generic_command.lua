@@ -1,5 +1,5 @@
 local util = require("latex_concealer.util")
-local d = require("latex_concealer.handler.util").conceal_commands_with_delim
+local d = require("latex_concealer.handler.util").conceal_commands
 return {
 	--Greek
 	["\\alpha"] = { "α", "MathGreek" },
