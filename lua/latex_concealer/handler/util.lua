@@ -30,9 +30,12 @@ function M.conceal_commands(opts)
 					col1_end + 1,
 					row2,
 					col2 - 1,
-					string.gsub(text, ".", function(str)
-						return opts.map[index][str] or str
-					end),
+					{
+						string.gsub(text, ".", function(str)
+							return opts.map[index][1][str] or str
+						end),
+						opts.map[index][2],
+					},
 					vim.api.nvim_create_namespace("latex_concealer")
 				)
 			end
