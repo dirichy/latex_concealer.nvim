@@ -18,7 +18,8 @@ function M.multichar_conceal(buffer, start_row, start_col, end_row, end_col, tex
 	local opts = vim.fn.deepcopy(M.config.extmark)
 	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
 	opts.virt_text = text
-		and (type(text) == "string" and { { text, "Conceal" } } or type(text[1] == "string") and { text } or text)
+			and (type(text) == "string" and { { text, "Conceal" } } or type(text[1] == "string") and { text } or text)
+		or { "", "Normal" }
 	opts.end_row = end_row
 	opts.end_col = end_col
 	local extmarks = vim.api.nvim_buf_get_extmarks(
