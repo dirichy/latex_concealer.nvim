@@ -1,4 +1,5 @@
 local util = require("latex_concealer.util")
+local d = require("latex_concealer.handler.command_delim").conceal
 return {
 	--Greek
 	["\\alpha"] = { "α", "MathGreek" },
@@ -81,41 +82,6 @@ return {
 	["\\cot"] = { "cot", "Constant" },
 	["\\arcsin"] = { "arcsin", "Constant" },
 	--Fraction
-	["\\frac"] = function(buffer, node)
-		local command_name = node:field("command")[1]
-		local arg1_node, arg2_node = unpack(node:field("arg"))
-		if arg1_node and arg2_node then
-			local row1, col1 = command_name:range()
-			local row1_end, col1_end, row2, col2 = arg1_node:range()
-			local row2_end, col2_end, row3, col3 = arg2_node:range()
-			util.multichar_conceal(
-				buffer,
-				row1,
-				col1,
-				row1_end,
-				col1_end + 1,
-				{ "(", "Special" },
-				vim.api.nvim_create_namespace("latex_concealer")
-			)
-			util.multichar_conceal(
-				buffer,
-				row2,
-				col2 - 1,
-				row2_end,
-				col2_end + 1,
-				{ ")/(", "Special" },
-				vim.api.nvim_create_namespace("latex_concealer")
-			)
-			util.multichar_conceal(
-				buffer,
-				row3,
-				col3 - 1,
-				row3,
-				col3,
-				{ ")", "Special" },
-				vim.api.nvim_create_namespace("latex_concealer")
-			)
-		end
-		return nil
-	end,
+	["\\frac"] = d({ { "(", "Special" }, { ")/(", "Special" }, { ")", "Special" } }),
+	["\\abs"] = d({ { "|", "Special" }, { "|", "Special" } }),
 }
