@@ -9,7 +9,9 @@ local function heading_handler(buffer, node)
 	local heading = curly_group_node:named_child(0)
 			and vim.treesitter.get_node_text(curly_group_node:named_child(0), buffer)
 		or ""
-	util.multichar_conceal(buffer, { node = node }, counter.the(buffer, node_type, heading))
+	local a, b = node:range()
+	local _, _, c, d = curly_group_node:range()
+	util.multichar_conceal(buffer, { a, b, c, d }, counter.the(buffer, node_type, heading))
 end
 local function command_expand(buffer, cmd, node)
 	local result = M.config.handler.generic_command[cmd]
