@@ -17,7 +17,8 @@ end
 
 function M.multichar_conceal(buffer, range, text, user_opts)
 	local start_row, start_col, end_row, end_col
-	local ns_id = user_opts and user_opts.ns_id or M.config.ns_id
+	user_opts = user_opts or {}
+	local ns_id = user_opts.ns_id or M.config.ns_id
 	user_opts.ns_id = nil
 	if range[1] then
 		start_row, start_col, end_row, end_col = unpack(range)
@@ -31,7 +32,7 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 		end
 	end
 	local opts = vim.fn.deepcopy(M.config.extmark)
-	opts = vim.tbl_deep_extend("force", opts, user_opts or {})
+	opts = vim.tbl_deep_extend("force", opts, user_opts)
 	opts.virt_text = type(text) == "string" and { { text, "Conceal" } }
 		or type(text[1]) == "string" and { text }
 		or text
