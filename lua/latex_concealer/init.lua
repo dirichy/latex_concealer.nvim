@@ -1,6 +1,6 @@
 local M = {}
 M.cache = {}
-local extmark = require("latex_concealer.extmark")
+local util = require("latex_concealer.extmark")
 local counter = require("latex_concealer.counter")
 local function heading_handler(buffer, node)
 	local node_type = node:type()
@@ -9,7 +9,7 @@ local function heading_handler(buffer, node)
 	local heading = curly_group_node:named_child(0)
 			and vim.treesitter.get_node_text(curly_group_node:named_child(0), buffer)
 		or ""
-	extmark.multichar_conceal(buffer, { node = node }, counter.the(buffer, node_type, heading))
+	util.multichar_conceal(buffer, { node = node }, counter.the(buffer, node_type, heading))
 end
 local function command_expand(buffer, cmd, node)
 	local result = M.config.handler.generic_command[cmd]
@@ -31,7 +31,7 @@ M.config = {
 				-- 	return
 			end
 			if expanded then
-				extmark.multichar_conceal(buffer, { node = node }, expanded)
+				util.multichar_conceal(buffer, { node = node }, expanded)
 			end
 		end,
 		chapter = heading_handler,
@@ -55,7 +55,7 @@ M.config = {
 				counter.cache[buffer].counters.item = counter.cache[buffer].counters.item + 1
 			end
 			node = node:child(0)
-			extmark.multichar_conceal(buffer, { node = node }, counter.the(buffer, "item"))
+			util.multichar_conceal(buffer, { node = node }, counter.the(buffer, "item"))
 		end,
 	},
 	handler = {
@@ -133,14 +133,14 @@ function M.refresh(buffer)
 		vim.schedule_wrap(function()
 			vim.api.nvim_buf_clear_namespace(buffer, vim.api.nvim_create_namespace("latex_concealer"), 0, -1)
 			counter.reset_all(buffer)
-			extmark.delete_all(buffer)
+			util.delete_all(buffer)
 			M.conceal(buffer)
 		end)
 	)
 end
 
 M.cursor_refresh = function(buffer)
-	extmark.restore_and_gc(buffer)
+	util.restore_and_gc(buffer)
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	row = row - 1
 	local extmarks = vim.api.nvim_buf_get_extmarks(
@@ -156,7 +156,7 @@ M.cursor_refresh = function(buffer)
 		local extstart = extmark[3]
 		local extend = extmark[4].end_col
 		if extstart <= col and col <= extend then
-			extmark.hide_extmark(extmark, buffer)
+			util.hide_extmark(extmark, buffer)
 		end
 	end
 end
@@ -215,7 +215,7 @@ function M.setup_buf(buffer)
 		})
 	end
 	counter.setup_buf(buffer)
-	extmark.setup_buf(buffer)
+	util.setup_buf(buffer)
 	M.refresh(buffer)
 	vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { scope = "local" })
 end
