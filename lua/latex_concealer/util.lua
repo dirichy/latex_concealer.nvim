@@ -45,7 +45,7 @@ function M.multichar_conceal(buffer, start_row, start_col, end_row, end_col, tex
 end
 
 function M.hide_extmark(extmark, buffer)
-	if extmark[4].virt_text then
+	if extmark[4].conceal then
 		M.cache[buffer].extmark[extmark[1]] = vim.fn.copy(extmark[4].virt_text)
 		local opts = extmark[4]
 		if opts.invalid then
@@ -87,7 +87,7 @@ function M.restore_and_gc(buffer)
 					hided_extmark[2],
 					hided_extmark[3].end_row,
 					hided_extmark[3].end_col,
-					extmark[1],
+					extmark[1] or "",
 					vim.api.nvim_create_namespace("latex_concealer"),
 					{ id = id }
 				)
