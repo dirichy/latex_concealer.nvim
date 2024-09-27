@@ -1,5 +1,5 @@
 local M = {}
-local util = require("latex_concealer.util")
+local util = require("latex_concealer.extmark")
 function M.conceal_commands(opts)
 	opts.map = opts.map or {}
 	opts.delim = opts.delim or {}
@@ -13,37 +13,21 @@ function M.conceal_commands(opts)
 		local row1_end, col1_end, row2, col2
 		for index, arg_node in ipairs(arg_nodes) do
 			row1_end, col1_end, row2, col2 = arg_node:range()
-			util.multichar_conceal(
-				buffer,
-				row1,
-				col1,
-				row1_end,
-				col1_end + 1,
-				opts.delim[index] or "",
-				vim.api.nvim_create_namespace("latex_concealer")
-			)
+			util.multichar_conceal(buffer, { row1, col1, row1_end, col1_end + 1 }, opts.delim[index] or "")
 			if opts.map[index] then
 				local text = vim.treesitter.get_node_text(arg_node, buffer):sub(2, -2)
-				util.multichar_conceal(buffer, row1_end, col1_end + 1, row2, col2 - 1, {
+				util.multichar_conceal(buffer, { row1_end, col1_end + 1, row2, col2 - 1 }, {
 					string.gsub(text, ".", function(str)
 						return opts.map[index][1] and opts.map[index][1][str] or str
 					end),
 					opts.map[index][2],
-				}, vim.api.nvim_create_namespace("latex_concealer"))
+				})
 			end
 			row1 = row2
 			col1 = col2 - 1
 		end
 		if opts.delim[#opts.delim] then
-			util.multichar_conceal(
-				buffer,
-				row1,
-				col1,
-				row1,
-				col1 + 1,
-				opts.delim[#opts.delim] or "",
-				vim.api.nvim_create_namespace("latex_concealer")
-			)
+			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 1 }, opts.delim[#opts.delim] or "")
 		end
 	end
 	return result
