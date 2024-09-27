@@ -23,7 +23,7 @@ function M.conceal_commands(opts)
 				vim.api.nvim_create_namespace("latex_concealer")
 			)
 			if opts.map[index] then
-				local text = vim.treesitter.get_node_text(arg_node, buffer):sub(2, -2)
+				local text = vim.treesitter.get_node_text(arg_node, buffer)
 				util.multichar_conceal(
 					buffer,
 					row1_end,
@@ -31,7 +31,7 @@ function M.conceal_commands(opts)
 					row2,
 					col2 - 1,
 					string.gsub(text, ".", function(str)
-						return opts.map[index][str]
+						return opts.map[index][str] or str
 					end),
 					vim.api.nvim_create_namespace("latex_concealer")
 				)
