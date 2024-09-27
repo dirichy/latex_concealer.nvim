@@ -88,7 +88,7 @@ M.config = {
 	},
 	handler = {
 		---@type table<string,string[]|string>
-		generic_command = require("latex_concealer.handler/latex_concealer/handler/generic_command"),
+		generic_command = require("latex_concealer.handler.generic_command"),
 		chapter = {},
 		section = {},
 		subsection = {},
