@@ -27,7 +27,7 @@ function M.conceal_commands(opts)
 			col1 = col2 - 1
 		end
 		if opts.delim[#opts.delim] then
-			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 1 }, opts.delim[#opts.delim] or "")
+			util.multichar_conceal(buffer, { row1, col1 - 1, row1, col1 }, opts.delim[#opts.delim] or "")
 		end
 	end
 	return result
