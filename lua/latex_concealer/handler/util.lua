@@ -33,6 +33,7 @@ M.conceal = {
 	}),
 	filter = setmetatable({
 		[0] = function(buffer, node, filter, hilight, opts)
+			opts = opts or {}
 			local arg_nodes = node:field("arg")
 			if not arg_nodes then
 				return
