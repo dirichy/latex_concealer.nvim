@@ -18,13 +18,14 @@ M.conceal = {
 				end
 				local _, _, start_row, start_col = arg_nodes[key - 1]:range()
 				local end_row, end_col
+				start_col = start_col - 1
 				if arg_nodes[key] then
 					end_row, end_col = arg_nodes[key]:range()
 				else
 					end_row = start_row
 					end_col = start_col + 1
 				end
-				return util.multichar_conceal(buffer, { start_row, start_col - 1, end_row, end_col + 1 }, virt_text)
+				return util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
 			end
 			rawset(t, key, result)
 			return result
@@ -41,9 +42,9 @@ M.conceal = {
 				local text = vim.treesitter.get_node_text(arg_nodes[key], buffer):sub(2, -2)
 				if type(filter) == "table" then
 					local aa = function(str)
-						return str:gsub("\\[a-zA-Z]*", function(atom)
+						return str:gsub("(\\[a-zA-Z]*)", function(atom)
 							return filter[atom]
-						end):gsub(".", function(atom)
+						end):gsub("(.)", function(atom)
 							return filter[atom]
 						end)
 					end
