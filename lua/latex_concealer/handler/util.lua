@@ -41,10 +41,13 @@ M.conceal = {
 				end
 				local text = vim.treesitter.get_node_text(arg_nodes[key], buffer):sub(2, -2)
 				if type(filter) == "table" then
+					vim.print(filter)
 					local aa = function(str)
 						return str:gsub("(\\[a-zA-Z]*)", function(atom)
+							vim.print(filter)
 							return filter[atom]
 						end):gsub("(.)", function(atom)
+							vim.print(filter)
 							return filter[atom]
 						end)
 					end
