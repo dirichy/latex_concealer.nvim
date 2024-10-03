@@ -6,7 +6,7 @@ M.conceal = {
 			local command_name = node:field("command")[1]
 			local arg_nodes = node:field("arg")
 			local start_row, start_col = command_name:range()
-			local _, _, end_row, end_col = arg_nodes[1]:range()
+			local end_row, end_col = arg_nodes[1]:range()
 			util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
 		end,
 	}, {
@@ -51,7 +51,7 @@ M.conceal = {
 					end
 				end
 				text = filter(text)
-				return util.multichar_conceal(buffer, arg_nodes[key], { text, hilight })
+				return util.multichar_conceal(buffer, { node = arg_nodes[key] }, { text, hilight })
 			end
 			rawset(t, key, result)
 			return result
