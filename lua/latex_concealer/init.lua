@@ -96,23 +96,6 @@ M.config = {
 	cursor_refresh_events = { "CursorMovedI", "CursorMoved" },
 }
 
--- function M.deconceal_environment(enum_node, buffer)
--- 	local item_node
--- 	local row
--- 	for item in enum_node:iter_children() do
--- 		if item:type() == "enum_item" then
--- 			item_node = item:child(0)
--- 			row = item_node:range()
--- 			vim.api.nvim_buf_clear_namespace(
--- 				buffer,
--- 				vim.api.nvim_create_namespace("latex_concealer"),
--- 				row,
--- 				row + 1
--- 			)
--- 		end
--- 	end
--- end
-
 function M.conceal(buffer, root)
 	local query_string = ""
 	for k, _ in pairs(M.config._handler) do
@@ -157,8 +140,6 @@ M.cursor_refresh = function(buffer)
 		{ row, col },
 		{ details = true }
 	)
-	-- col=col-1
-	-- local node=vim.treesitter.get_node({buffer=buffer,pos={row,col}})
 	for _, extmark in ipairs(extmarks) do
 		local extstart = extmark[3]
 		local extend = extmark[4].end_col
@@ -167,29 +148,7 @@ M.cursor_refresh = function(buffer)
 		end
 	end
 end
--- function M.local_refresh()
--- 	local timer = vim.uv.new_timer()
--- 	timer:start(
--- 		200,
--- 		0,
--- 		vim.schedule_wrap(function()
--- 			local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
--- 			while node do
--- 				if node:type() == "generic_environment" then
--- 					local env_name =
--- 						vim.treesitter.get_node_text(node:field("begin")[1]:field("name")[1]:field("text")[1], 0)
--- 					if env_name == "itemize" or env_name == "enumerate" then
--- 						M.deconceal_environment(node)
--- 						M.conceal_environment(node, env_name == "enumerate")
--- 						-- vim.api.nvim_buf_clear_namespace(0, vim.api.nvim_create_namespace("latex_concealer"), row, end_row)
--- 						break
--- 					end
--- 				end
--- 				node = node:parent()
--- 			end
--- 		end)
--- 	)
--- end
+
 M.local_refresh = M.refresh
 function M.setup_buf(buffer)
 	if M.cache[buffer] then

@@ -75,6 +75,8 @@ end
 
 function M.reset_all(buffer)
 	M.cache[buffer]._counters = vim.fn.deepcopy(M.config._counters)
+	M.cache[buffer].enum_depth = 0
+	M.cache[buffer].item_depth = 0
 end
 
 function M.setup(opts)
