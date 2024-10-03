@@ -31,7 +31,31 @@ M.conceal = {
 			return result
 		end,
 	}),
-	filter = setmetatable({}, {
+	filter = setmetatable({
+		[0] = function(buffer, node, filter, hilight)
+			local arg_nodes = node:field("arg")
+			if not arg_nodes then
+				return
+			end
+			local arg_node = arg_nodes[1]
+			if not arg_node then
+				return
+			end
+			local text = vim.treesitter.get_node_text(arg_node, buffer):sub(2, -2)
+			if type(filter) == "table" then
+				local fil_table = filter
+				filter = function(str)
+					return str:gsub("(\\[a-zA-Z]*)", function(atom)
+						return fil_table[atom]
+					end):gsub("(.)", function(atom)
+						return fil_table[atom]
+					end)
+				end
+			end
+			text = filter(text)
+			return util.multichar_conceal(buffer, { node = node }, { text, hilight })
+		end,
+	}, {
 		__index = function(t, key)
 			local result = function(buffer, node, filter, hilight)
 				---@type TSNode[]

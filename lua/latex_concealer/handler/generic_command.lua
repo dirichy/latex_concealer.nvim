@@ -225,9 +225,7 @@ return {
 	-- ["\\abs"] = d({ delim = { { "|", "Special" }, { "|", "Special" } } }),
 	--fondt
 	["\\mathbb"] = function(buffer, node)
-		d.delim[1](buffer, node, { "", "ErrorMsg" })
-		d.delim[2](buffer, node, { "", "Constant" })
-		d.filter[1](buffer, node, {
+		d.filter[0](buffer, node, {
 			A = "𝔸",
 			B = "𝔹",
 			C = "ℂ",
