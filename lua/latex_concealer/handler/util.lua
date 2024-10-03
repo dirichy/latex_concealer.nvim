@@ -1,6 +1,28 @@
 local M = {}
 local util = require("latex_concealer.extmark")
 M.conceal = {
+	script = function(buffer, node, filter, hilight)
+		local arg_node = node:named_child(0)
+		if not arg_node then
+			return
+		end
+		local text = vim.treesitter.get_node_text(arg_node, buffer)
+		if string.match(arg_node:type(), "curly_group") then
+			text = text:sub(2, -2)
+		end
+		if type(filter) == "table" then
+			local fil_table = filter
+			filter = function(str)
+				return str:gsub("(\\[a-zA-Z]*)", function(atom)
+					return fil_table[atom]
+				end):gsub("(.)", function(atom)
+					return fil_table[atom]
+				end)
+			end
+		end
+		text = filter(text)
+		return util.multichar_conceal(buffer, { node = node }, { text, hilight })
+	end,
 	delim = setmetatable({
 		[1] = function(buffer, node, virt_text)
 			local command_name = node:field("command")[1]

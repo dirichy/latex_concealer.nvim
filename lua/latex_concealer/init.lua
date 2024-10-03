@@ -26,10 +26,10 @@ end
 M.config = {
 	_handler = {
 		subscript = function(buffer, node)
-			concealer.filter[0](buffer, node, filters.subscript, "Identifier")
+			concealer.script(buffer, node, filters.subscript, "Identifier")
 		end,
 		superscript = function(buffer, node)
-			concealer.filter[0](buffer, node, filters.superscript, "Identifier")
+			concealer.script(buffer, node, filters.superscript, "Identifier")
 		end,
 		generic_command = function(buffer, node)
 			local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
