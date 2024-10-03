@@ -40,13 +40,14 @@ M.conceal = {
 				end
 				local text = vim.treesitter.get_node_text(arg_nodes[key], buffer):sub(2, -2)
 				if type(filter) == "table" then
-					filter = function(str)
+					local aa = function(str)
 						return str:gsub("\\[a-zA-Z]*", function(atom)
 							return filter[atom]
 						end):gsub(".", function(atom)
 							return filter[atom]
 						end)
 					end
+					filter = aa
 				end
 				text = filter(text)
 				return util.multichar_conceal(buffer, arg_nodes[key], { text, hilight })
