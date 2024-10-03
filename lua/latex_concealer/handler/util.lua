@@ -1,5 +1,61 @@
 local M = {}
 local util = require("latex_concealer.extmark")
+M.conceal = {
+	delim = setmetatable({
+		[1] = function(buffer, node, virt_text)
+			local command_name = node:field("command")[1]
+			local arg_nodes = node:field("arg")
+			local start_row, start_col = command_name:range()
+			local _, _, end_row, end_col = arg_nodes[1]:range()
+			util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
+		end,
+	}, {
+		__index = function(t, key)
+			local result = function(buffer, node, virt_text)
+				local arg_nodes = node:field("arg")
+				if not arg_nodes[key - 1] then
+					return
+				end
+				local start_row, start_col = arg_nodes[key - 1]:range()
+				local end_row, end_col
+				if arg_nodes[key] then
+					_, _, end_row, end_col = arg_nodes[key]:range()
+				else
+					end_row = start_row
+					end_col = start_col + 1
+				end
+				return util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
+			end
+			rawset(t, key, result)
+			return result
+		end,
+	}),
+	filter = setmetatable({}, {
+		__index = function(t, key)
+			local result = function(buffer, node, filter, hilight)
+				---@type TSNode[]
+				local arg_nodes = node:field("arg")
+				if not arg_nodes[key] then
+					return
+				end
+				local text = vim.treesitter.get_node_text(arg_nodes[key], buffer):sub(2, -2)
+				if type(filter) == "table" then
+					filter = function(str)
+						return str:gsub("\\[a-zA-Z]*", function(atom)
+							return filter[atom]
+						end):gsub(".", function(atom)
+							return filter[atom]
+						end)
+					end
+				end
+				text = filter(text)
+				return util.multichar_conceal(buffer, arg_nodes[key], { text, hilight })
+			end
+			rawset(t, key, result)
+			return result
+		end,
+	}),
+}
 function M.conceal_commands(opts)
 	opts.map = opts.map or {}
 	opts.delim = opts.delim or {}
