@@ -222,8 +222,15 @@ return {
 	["\\right"] = { "", "Identifier" },
 	["\\left"] = { "", "Identifier" },
 	--command_delim
-	-- ["\\frac"] = d({ delim = { { "(", "Special" }, { ")/(", "Special" }, { ")", "Special" } } }),
-	-- ["\\abs"] = d({ delim = { { "|", "Special" }, { "|", "Special" } } }),
+	["\\frac"] = function(buffer, node)
+		concealer.delim[1](buffer, node, { "(", "Special" })
+		concealer.delim[2](buffer, node, { ")/(", "Special" })
+		concealer.delim[3](buffer, node, { ")", "Special" })
+	end,
+	["\\abs"] = function(buffer, node)
+		concealer.delim[1](buffer, node, { "|", "Special" })
+		concealer.delim[2](buffer, node, { "|", "Special" })
+	end,
 	--fonts
 	["\\mathbb"] = function(buffer, node)
 		concealer.filter[0](buffer, node, filters.mathbb, "Special")
