@@ -5,6 +5,9 @@ M.conceal = {
 		[1] = function(buffer, node, virt_text)
 			local command_name = node:field("command")[1]
 			local arg_nodes = node:field("arg")
+			if not arg_nodes or not arg_nodes[1] then
+				return
+			end
 			local start_row, start_col = command_name:range()
 			local end_row, end_col = arg_nodes[1]:range()
 			util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
@@ -42,7 +45,10 @@ M.conceal = {
 			if not arg_node then
 				return
 			end
-			local text = vim.treesitter.get_node_text(arg_node, buffer):sub(2, -2)
+			local text = vim.treesitter.get_node_text(arg_node, buffer)
+			if string.match(arg_node:type(), "curly_group") then
+				text = text:sub(2, -2)
+			end
 			if type(filter) == "table" then
 				local fil_table = filter
 				filter = function(str)

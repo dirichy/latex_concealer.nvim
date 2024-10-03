@@ -1,3 +1,5 @@
+local concealer = require("latex_concealer.handler.util").conceal
+local filters = require("latex_concealer.filters")
 local M = {}
 M.cache = {}
 local util = require("latex_concealer.extmark")
@@ -23,14 +25,17 @@ end
 
 M.config = {
 	_handler = {
+		subscript = function(buffer, node)
+			concealer.filter[0](buffer, node, filters.subscript, "Identifier")
+		end,
+		superscript = function(buffer, node)
+			concealer.filter[0](buffer, node, filters.superscript, "Identifier")
+		end,
 		generic_command = function(buffer, node)
 			local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
 			local expanded
 			if M.config.handler.generic_command[command_name] then
 				expanded = command_expand(buffer, command_name, node)
-				-- else
-				-- 	util.delete_extmark(buffer, node)
-				-- 	return
 			end
 			if expanded then
 				util.multichar_conceal(buffer, { node = node }, expanded)
