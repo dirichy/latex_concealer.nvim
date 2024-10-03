@@ -23,7 +23,7 @@ M.conceal = {
 					end_row, end_col = arg_nodes[key]:range()
 				else
 					end_row = start_row
-					end_col = start_col + 1
+					end_col = start_col
 				end
 				return util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
 			end
