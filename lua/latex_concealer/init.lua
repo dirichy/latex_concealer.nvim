@@ -115,7 +115,7 @@ M.config = {
 
 function M.conceal(buffer, root)
 	local query_string = ""
-	for k, _ in pairs(M.config.handler) do
+	for k, _ in pairs(M.config._handler) do
 		query_string = query_string .. " (" .. k .. ") @" .. k
 	end
 	local query = vim.treesitter.query.parse("latex", query_string)
