@@ -10,18 +10,16 @@ M.conceal = {
 		if string.match(arg_node:type(), "curly_group") then
 			text = text:sub(2, -2)
 		end
-		if type(filter) == "table" then
-			local fil_table = filter
-			filter = function(str)
-				return str:gsub("(\\[a-zA-Z]*)", function(atom)
-					return fil_table[atom]
-				end):gsub("(.)", function(atom)
-					return fil_table[atom]
-				end)
+		local flag = true
+		text = text:gsub("(.)", function(letter)
+			if filter[letter] then
+				return filter[letter]
+			else
+				flag = false
+				return letter
 			end
-		end
-		text = filter(text)
-		return util.multichar_conceal(buffer, { node = node }, { text, hilight })
+		end)
+		return flag and util.multichar_conceal(buffer, { node = node }, { text, hilight }) or false
 	end,
 	delim = setmetatable({
 		[1] = function(buffer, node, virt_text)
