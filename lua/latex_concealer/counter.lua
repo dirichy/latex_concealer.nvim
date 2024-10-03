@@ -80,7 +80,7 @@ function M.reset_all(buffer)
 end
 
 function M.setup(opts)
-	M.config = vim.tbl_deep_extend("force", M.config, opts)
+	M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 end
 
 function M.setup_buf(buffer, opts)
