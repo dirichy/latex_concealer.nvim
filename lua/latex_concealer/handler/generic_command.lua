@@ -1,5 +1,6 @@
 local util = require("latex_concealer.util")
-local d = require("latex_concealer.handler.util").conceal
+local concealer = require("latex_concealer.handler.util").conceal
+local filters = require("latex_concealer.filters")
 return {
 	--Greek
 	["\\alpha"] = { "α", "MathGreek" },
@@ -223,35 +224,23 @@ return {
 	--command_delim
 	-- ["\\frac"] = d({ delim = { { "(", "Special" }, { ")/(", "Special" }, { ")", "Special" } } }),
 	-- ["\\abs"] = d({ delim = { { "|", "Special" }, { "|", "Special" } } }),
-	--fondt
+	--fonts
 	["\\mathbb"] = function(buffer, node)
-		d.filter[0](buffer, node, {
-			A = "𝔸",
-			B = "𝔹",
-			C = "ℂ",
-			D = "𝔻",
-			E = "𝔼",
-			F = "𝔽",
-			G = "𝔾",
-			H = "ℍ",
-			I = "𝕀",
-			J = "𝕁",
-			K = "𝕂",
-			L = "𝕃",
-			M = "𝕄",
-			N = "ℕ",
-			O = "𝕆",
-			P = "ℙ",
-			Q = "ℚ",
-			R = "ℝ",
-			S = "𝕊",
-			T = "𝕋",
-			U = "𝕌",
-			V = "𝕍",
-			W = "𝕎",
-			X = "𝕏",
-			Y = "𝕐",
-			Z = "ℤ",
-		}, "Special", { delim = { "/", "/" } })
+		concealer.filter[0](buffer, node, filters.mathbb, "Special")
+	end,
+	["\\mathcal"] = function(buffer, node)
+		concealer.filter[0](buffer, node, filters.mathcal, "Special")
+	end,
+	["\\mathbbm"] = function(buffer, node)
+		concealer.filter[0](buffer, node, filters.mathbbm, "Special")
+	end,
+	["\\mathfrak"] = function(buffer, node)
+		concealer.filter[0](buffer, node, filters.mathfrak, "Special")
+	end,
+	["\\mathscr"] = function(buffer, node)
+		concealer.filter[0](buffer, node, filters.mathscr, "Special")
+	end,
+	["\\mathsf"] = function(buffer, node)
+		concealer.filter[0](buffer, node, filters.mathsf, "Special")
 	end,
 }
