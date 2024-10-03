@@ -256,8 +256,8 @@ return {
 			Y = "𝕐",
 			Z = "ℤ",
 		}, "Special")
-		d.filter[2](buffer, node, function(str)
-			return str .. "@" .. str
-		end, "Identifier")
+		-- d.filter[2](buffer, node, function(str)
+		-- 	return str .. "@" .. str
+		-- end, "Identifier")
 	end,
 }

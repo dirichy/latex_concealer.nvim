@@ -16,15 +16,15 @@ M.conceal = {
 				if not arg_nodes[key - 1] then
 					return
 				end
-				local start_row, start_col = arg_nodes[key - 1]:range()
+				local _, _, start_row, start_col = arg_nodes[key - 1]:range()
 				local end_row, end_col
 				if arg_nodes[key] then
-					_, _, end_row, end_col = arg_nodes[key]:range()
+					end_row, end_col = arg_nodes[key]:range()
 				else
 					end_row = start_row
 					end_col = start_col + 1
 				end
-				return util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
+				return util.multichar_conceal(buffer, { start_row, start_col - 1, end_row, end_col + 1 }, virt_text)
 			end
 			rawset(t, key, result)
 			return result
