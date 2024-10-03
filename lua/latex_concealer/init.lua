@@ -126,7 +126,7 @@ function M.conceal(buffer, root)
 	counter.reset_all(buffer)
 	for _, node in query:iter_captures(root, buffer) do
 		local node_type = node:type()
-		if M.config.handler[node_type] then
+		if M.config._handler[node_type] then
 			M.config._handler[node_type](buffer, node)
 		end
 	end
