@@ -32,7 +32,7 @@ M.conceal = {
 		end,
 	}),
 	filter = setmetatable({
-		[0] = function(buffer, node, filter, hilight)
+		[0] = function(buffer, node, filter, hilight, opts)
 			local arg_nodes = node:field("arg")
 			if not arg_nodes then
 				return
@@ -53,6 +53,9 @@ M.conceal = {
 				end
 			end
 			text = filter(text)
+			if opts.delim then
+				text = opts.delim[1] .. text .. opts.delim[2]
+			end
 			return util.multichar_conceal(buffer, { node = node }, { text, hilight })
 		end,
 	}, {

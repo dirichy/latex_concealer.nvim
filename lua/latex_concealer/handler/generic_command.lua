@@ -252,6 +252,6 @@ return {
 			X = "𝕏",
 			Y = "𝕐",
 			Z = "ℤ",
-		}, "Special")
+		}, "Special", { delim = { "/", "/" } })
 	end,
 }
