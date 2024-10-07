@@ -231,6 +231,7 @@ return {
 		concealer.delim[1](buffer, node, { "|", "Special" })
 		concealer.delim[2](buffer, node, { "|", "Special" })
 	end,
+	["\\ref"] = { delim = { "🔗", "🔗" } },
 	--fonts
 	["\\mathbb"] = function(buffer, node)
 		concealer.filter[0](buffer, node, filters.mathbb, "Special")

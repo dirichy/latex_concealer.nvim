@@ -20,7 +20,20 @@ local function command_expand(buffer, cmd, node)
 	if type(result) == "function" then
 		return result(buffer, node)
 	end
-	return result
+	if result[1] or type(result) == "string" then
+		return result
+	else
+		if result.delim then
+			for k, v in pairs(result.delim) do
+				concealer.delim[k](buffer, node, v)
+			end
+		end
+		if result.filter then
+			for k, v in pairs(result.filter) do
+				concealer.filter[k](buffer, node, v)
+			end
+		end
+	end
 end
 
 M.config = {
