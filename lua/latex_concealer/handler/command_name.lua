@@ -191,6 +191,8 @@ return {
 	["\\vdash"] = { "⊢", "Statement" }, --re
 	--others
 	["\\|"] = { "‖", "Identifier" },
+	["\\lVert"] = { "‖", "Special" },
+	["\\rVert"] = { "‖", "Special" },
 	["\\ast"] = { "∗", "Identifier" },
 	["\\backslash"] = { "∖", "Identifier" },
 	["\\bowtie"] = { "⋈", "Identifier" },
