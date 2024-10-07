@@ -69,10 +69,7 @@ M.config = {
 		end,
 		command_name = function(buffer, node)
 			local command_name = vim.treesitter.get_node_text(node, buffer)
-			local expanded
-			if M.config.handler.command_name[command_name] then
-				expanded = command_expand(buffer, command_name, node)
-			end
+			local expanded = M.config.handler.command_name[command_name]
 			if expanded then
 				util.multichar_conceal(buffer, { node = node }, expanded)
 			end
