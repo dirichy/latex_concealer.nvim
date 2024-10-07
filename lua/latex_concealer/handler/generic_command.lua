@@ -27,6 +27,22 @@ local superscript_tbl = {
 	["8"] = "⁸",
 	["9"] = "⁹",
 }
+local function frac_handler(buffer, node)
+	local arg_nodes = node:field("arg")
+	if #arg_nodes ~= 2 then
+		return
+	end
+	local up = vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2)
+	local down = vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2)
+	if string.match(up .. down, "[-]?[0-9-]*") then
+		up = up:gsub(".", superscript_tbl)
+		down = down:gsub(".", subscript_tbl)
+		return { up .. "/" .. down, "Constant" }
+	end
+	concealer.delim[1](buffer, node, { "(", "Special" })
+	concealer.delim[2](buffer, node, { ")/(", "Special" })
+	concealer.delim[3](buffer, node, { ")", "Special" })
+end
 return {
 	--Greek
 	["\\alpha"] = { "α", "MathGreek" },
@@ -248,22 +264,9 @@ return {
 	["\\right"] = { "", "Identifier" },
 	["\\left"] = { "", "Identifier" },
 	--command_delim
-	["\\frac"] = function(buffer, node)
-		local arg_nodes = node:field("arg")
-		if #arg_nodes ~= 2 then
-			return
-		end
-		local up = vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2)
-		local down = vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2)
-		if string.match(up .. down, "[-]?[0-9-]*") then
-			up = up:gsub(".", superscript_tbl)
-			down = down:gsub(".", subscript_tbl)
-			return { up .. "/" .. down, "Constant" }
-		end
-		concealer.delim[1](buffer, node, { "(", "Special" })
-		concealer.delim[2](buffer, node, { ")/(", "Special" })
-		concealer.delim[3](buffer, node, { ")", "Special" })
-	end,
+	["\\frac"] = frac_handler,
+	["\\dfrac"] = frac_handler,
+	["\\tfrac"] = frac_handler,
 	["\\abs"] = { delim = { { "|", "Special" }, { "|", "Special" } } },
 	--fonts
 	["\\mathbb"] = { font = { filters.mathbb, "Special" } },
