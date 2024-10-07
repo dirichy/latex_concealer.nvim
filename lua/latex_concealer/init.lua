@@ -209,7 +209,11 @@ function M.setup_buf(buffer)
 	counter.setup_buf(buffer)
 	util.setup_buf(buffer)
 	M.refresh(buffer)
-	vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { scope = "local" })
+	if M.config.conceal_cursor then
+		vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { scope = "local" })
+	end
+
+	vim.api.nvim_set_option_value("conceallevel", 2, { scope = "local" })
 end
 
 function M.setup(opts)
