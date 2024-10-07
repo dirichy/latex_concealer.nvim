@@ -1,25 +1,6 @@
 local util = require("latex_concealer.util")
 local concealer = require("latex_concealer.handler.util").conceal
 local filters = require("latex_concealer.filters")
-local frac_tbl = {
-	[0] = { [3] = "↉" },
-	[1] = {
-		[2] = "½",
-		[3] = "⅓",
-		[4] = "¼",
-		[5] = "⅕",
-		[6] = "⅙",
-		[7] = "⅐",
-		[8] = "⅛",
-		[9] = "⅑",
-		[10] = "⅒",
-	},
-	[2] = { [3] = "⅔", [5] = "⅖" },
-	[3] = { [4] = "¾", [5] = "⅗", [8] = "⅜" },
-	[4] = { [5] = "⅘" },
-	[5] = { [6] = "⅚", [8] = "⅝" },
-	[7] = { [8] = "⅞" },
-}
 local subscript_tbl = {
 	["-"] = "₋",
 	["0"] = "₀",
@@ -274,44 +255,15 @@ return {
 		end
 		local up = vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2)
 		local down = vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2)
-		local flag = true
-		up = up:gsub(".", function(str)
-			if superscript_tbl[str] then
-				return superscript_tbl[str]
-			else
-				flag = false
-			end
-		end)
-		down = down:gsub(".", function(str)
-			if subscript_tbl[str] then
-				return subscript_tbl[str]
-			else
-				flag = false
-			end
-		end)
-		if flag then
+		if string.match(up .. down, "[-]?[0-9-]*") then
+			up = up:gsub(".", superscript_tbl)
+			down = down:gsub(".", subscript_tbl)
 			return { up .. "/" .. down, "Constant" }
 		end
 		concealer.delim[1](buffer, node, { "(", "Special" })
 		concealer.delim[2](buffer, node, { ")/(", "Special" })
 		concealer.delim[3](buffer, node, { ")", "Special" })
 	end,
-	-- ["\\frac"] = function(buffer, node)
-	-- 	local arg_nodes = node:field("arg")
-	-- 	if #arg_nodes ~= 2 then
-	-- 		return
-	-- 	end
-	-- 	local up = tonumber(vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2))
-	-- 	local down = tonumber(vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2))
-	-- 	if up and down then
-	-- 		if frac_tbl[up] and frac_tbl[up][down] then
-	-- 			return { frac_tbl[up][down], "Constant" }
-	-- 		end
-	-- 	end
-	-- 	concealer.delim[1](buffer, node, { "(", "Special" })
-	-- 	concealer.delim[2](buffer, node, { ")/(", "Special" })
-	-- 	concealer.delim[3](buffer, node, { ")", "Special" })
-	-- end,
 	["\\abs"] = { delim = { { "|", "Special" }, { "|", "Special" } } },
 	--fonts
 	["\\mathbb"] = { font = { filters.mathbb, "Special" } },
