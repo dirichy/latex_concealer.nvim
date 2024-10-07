@@ -216,4 +216,6 @@ return {
 	["\\top"] = { "⊤", "Identifier" },
 	["\\triangleleft"] = { "⊲", "Identifier" },
 	["\\triangleright"] = { "⊳", "Identifier" },
+	["\\lvert"] = { "|", "Special" },
+	["\\rvert"] = { "|", "Special" },
 }

@@ -56,4 +56,10 @@ return {
 	["\\mathfrak"] = { font = { filters.mathfrak, "Special" } },
 	["\\mathscr"] = { font = { filters.mathscr, "Special" } },
 	["\\mathsf"] = { font = { filters.mathsf, "Special" } },
+	["\\operatorname"] = { font = {
+		function(str)
+			return str
+		end,
+		"Normal",
+	} },
 }
