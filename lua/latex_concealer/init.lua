@@ -67,6 +67,16 @@ M.config = {
 				util.multichar_conceal(buffer, { node = node }, expanded)
 			end
 		end,
+		command_name = function(buffer, node)
+			local command_name = vim.treesitter.get_node_text(node, buffer)
+			local expanded
+			if M.config.handler.command_name[command_name] then
+				expanded = command_expand(buffer, command_name, node)
+			end
+			if expanded then
+				util.multichar_conceal(buffer, { node = node }, expanded)
+			end
+		end,
 		chapter = heading_handler,
 		section = heading_handler,
 		subsection = heading_handler,
@@ -97,6 +107,7 @@ M.config = {
 	handler = {
 		---@type table<string,string[]|string>
 		generic_command = require("latex_concealer.handler.generic_command"),
+		command_name = require("latex_concealer.handler.command_name"),
 		chapter = {},
 		section = {},
 		subsection = {},
