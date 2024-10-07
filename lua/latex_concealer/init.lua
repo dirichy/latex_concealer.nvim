@@ -88,7 +88,10 @@ M.config = {
 				counter.cache[buffer].counters.item = counter.cache[buffer].counters.item + 1
 			end
 			node = node:child(0)
-			util.multichar_conceal(buffer, { node = node }, counter.the(buffer, "item"))
+			local virt_text = counter.the(buffer, "item")
+			if virt_text then
+				util.multichar_conceal(buffer, { node = node }, virt_text)
+			end
 		end,
 	},
 	handler = {
