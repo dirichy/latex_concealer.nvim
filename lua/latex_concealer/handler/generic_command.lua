@@ -247,7 +247,7 @@ return {
 			return
 		end
 		local up = tonumber(vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2))
-		local down = tonumber(vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2))
+		local down = tonumber(vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2))
 		if up and down then
 			if frac_tbl[up] and frac_tbl[up][down] then
 				return { frac_tbl[up][down], "Constant" }
