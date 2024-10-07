@@ -38,6 +38,16 @@ end
 
 M.config = {
 	_handler = {
+		label_definition = function(buffer, node)
+			local row1, col1, row2, col2 = node:range()
+			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 7 }, "🔗")
+			util.multichar_conceal(buffer, { row2, col2 - 1, row2, col2 }, "🔗")
+		end,
+		label_reference = function(buffer, node)
+			local row1, col1, row2, col2 = node:range()
+			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 5 }, "🔗")
+			util.multichar_conceal(buffer, { row2, col2 - 1, row2, col2 }, "🔗")
+		end,
 		subscript = function(buffer, node)
 			concealer.script(buffer, node, filters.subscript, "Identifier")
 		end,

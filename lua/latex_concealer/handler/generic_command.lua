@@ -222,7 +222,7 @@ return {
 	["\\right"] = { "", "Identifier" },
 	["\\left"] = { "", "Identifier" },
 	--command_delim
-	["\\frac"] = { delim = { "(", ")/(", ")" } },
+	["\\frac"] = { delim = { { "(", "Special" }, { ")/(", "Special" }, { ")", "Special" } } },
 	-- ["\\frac"] = function(buffer, node)
 	-- 	concealer.delim[1](buffer, node, { "(", "Special" })
 	-- 	concealer.delim[2](buffer, node, { ")/(", "Special" })
