@@ -20,6 +20,32 @@ local frac_tbl = {
 	[5] = { [6] = "⅚", [8] = "⅝" },
 	[7] = { [8] = "⅞" },
 }
+local subscript_tbl = {
+	["-"] = "₋",
+	["0"] = "₀",
+	["1"] = "₁",
+	["2"] = "₂",
+	["3"] = "₃",
+	["4"] = "₄",
+	["5"] = "₅",
+	["6"] = "₆",
+	["7"] = "₇",
+	["8"] = "₈",
+	["9"] = "₉",
+}
+local superscript_tbl = {
+	["-"] = "⁻",
+	["0"] = "⁰",
+	["1"] = "¹",
+	["2"] = "²",
+	["3"] = "³",
+	["4"] = "⁴",
+	["5"] = "⁵",
+	["6"] = "⁶",
+	["7"] = "⁷",
+	["8"] = "⁸",
+	["9"] = "⁹",
+}
 return {
 	--Greek
 	["\\alpha"] = { "α", "MathGreek" },
@@ -246,17 +272,46 @@ return {
 		if #arg_nodes ~= 2 then
 			return
 		end
-		local up = tonumber(vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2))
-		local down = tonumber(vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2))
-		if up and down then
-			if frac_tbl[up] and frac_tbl[up][down] then
-				return { frac_tbl[up][down], "Constant" }
+		local up = vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2)
+		local down = vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2)
+		local flag = true
+		up = up:gsub(".", function(str)
+			if superscript_tbl[str] then
+				return superscript_tbl[str]
+			else
+				flag = false
 			end
+		end)
+		down = down:gsub(".", function(str)
+			if subscript_tbl[str] then
+				return subscript_tbl[str]
+			else
+				flag = false
+			end
+		end)
+		if flag then
+			return { up .. "/" .. down, "Constant" }
 		end
 		concealer.delim[1](buffer, node, { "(", "Special" })
 		concealer.delim[2](buffer, node, { ")/(", "Special" })
 		concealer.delim[3](buffer, node, { ")", "Special" })
 	end,
+	-- ["\\frac"] = function(buffer, node)
+	-- 	local arg_nodes = node:field("arg")
+	-- 	if #arg_nodes ~= 2 then
+	-- 		return
+	-- 	end
+	-- 	local up = tonumber(vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2))
+	-- 	local down = tonumber(vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2))
+	-- 	if up and down then
+	-- 		if frac_tbl[up] and frac_tbl[up][down] then
+	-- 			return { frac_tbl[up][down], "Constant" }
+	-- 		end
+	-- 	end
+	-- 	concealer.delim[1](buffer, node, { "(", "Special" })
+	-- 	concealer.delim[2](buffer, node, { ")/(", "Special" })
+	-- 	concealer.delim[3](buffer, node, { ")", "Special" })
+	-- end,
 	["\\abs"] = { delim = { { "|", "Special" }, { "|", "Special" } } },
 	--fonts
 	["\\mathbb"] = { font = { filters.mathbb, "Special" } },
