@@ -1,6 +1,36 @@
 local M = {}
 local util = require("latex_concealer.extmark")
 M.conceal = {
+	font = function(buffer, node, filter, hilight, opts)
+		opts = opts or {}
+		local arg_nodes = node:field("arg")
+		if not arg_nodes then
+			return
+		end
+		local arg_node = arg_nodes[1]
+		if not arg_node then
+			return
+		end
+		local text = vim.treesitter.get_node_text(arg_node, buffer)
+		if string.match(arg_node:type(), "curly_group") then
+			text = text:sub(2, -2)
+		end
+		if type(filter) == "table" then
+			local fil_table = filter
+			filter = function(str)
+				return str:gsub("(\\[a-zA-Z]*)", function(atom)
+					return fil_table[atom]
+				end):gsub("(.)", function(atom)
+					return fil_table[atom]
+				end)
+			end
+		end
+		text = filter(text)
+		if opts.delim then
+			text = opts.delim[1] .. text .. opts.delim[2]
+		end
+		return { text, hilight }
+	end,
 	--- Handle subscript and super script
 	---@param buffer number
 	---@param node TSNode
@@ -60,38 +90,7 @@ M.conceal = {
 			return result
 		end,
 	}),
-	filter = setmetatable({
-		[0] = function(buffer, node, filter, hilight, opts)
-			opts = opts or {}
-			local arg_nodes = node:field("arg")
-			if not arg_nodes then
-				return
-			end
-			local arg_node = arg_nodes[1]
-			if not arg_node then
-				return
-			end
-			local text = vim.treesitter.get_node_text(arg_node, buffer)
-			if string.match(arg_node:type(), "curly_group") then
-				text = text:sub(2, -2)
-			end
-			if type(filter) == "table" then
-				local fil_table = filter
-				filter = function(str)
-					return str:gsub("(\\[a-zA-Z]*)", function(atom)
-						return fil_table[atom]
-					end):gsub("(.)", function(atom)
-						return fil_table[atom]
-					end)
-				end
-			end
-			text = filter(text)
-			if opts.delim then
-				text = opts.delim[1] .. text .. opts.delim[2]
-			end
-			return util.multichar_conceal(buffer, { node = node }, { text, hilight })
-		end,
-	}, {
+	filter = setmetatable({}, {
 		__index = function(t, key)
 			local result = function(buffer, node, filter, hilight)
 				---@type TSNode[]

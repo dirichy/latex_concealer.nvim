@@ -23,6 +23,9 @@ local function command_expand(buffer, cmd, node)
 	if result[1] or type(result) == "string" then
 		return result
 	else
+		if result.font then
+			return concealer.font(buffer, node, result.font[1], result.font[2], result.font.opts)
+		end
 		if result.delim then
 			for k, v in pairs(result.delim) do
 				concealer.delim[k](buffer, node, v)

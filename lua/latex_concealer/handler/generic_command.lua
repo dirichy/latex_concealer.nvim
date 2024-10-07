@@ -223,33 +223,12 @@ return {
 	["\\left"] = { "", "Identifier" },
 	--command_delim
 	["\\frac"] = { delim = { { "(", "Special" }, { ")/(", "Special" }, { ")", "Special" } } },
-	-- ["\\frac"] = function(buffer, node)
-	-- 	concealer.delim[1](buffer, node, { "(", "Special" })
-	-- 	concealer.delim[2](buffer, node, { ")/(", "Special" })
-	-- 	concealer.delim[3](buffer, node, { ")", "Special" })
-	-- end,
-	["\\abs"] = function(buffer, node)
-		concealer.delim[1](buffer, node, { "|", "Special" })
-		concealer.delim[2](buffer, node, { "|", "Special" })
-	end,
-	-- ["\\ref"] = { delim = { "🔗", "🔗" } },
+	["\\abs"] = { delim = { { "|", "Special" }, { "|", "Special" } } },
 	--fonts
-	["\\mathbb"] = function(buffer, node)
-		concealer.filter[0](buffer, node, filters.mathbb, "Special")
-	end,
-	["\\mathcal"] = function(buffer, node)
-		concealer.filter[0](buffer, node, filters.mathcal, "Special")
-	end,
-	["\\mathbbm"] = function(buffer, node)
-		concealer.filter[0](buffer, node, filters.mathbbm, "Special")
-	end,
-	["\\mathfrak"] = function(buffer, node)
-		concealer.filter[0](buffer, node, filters.mathfrak, "Special")
-	end,
-	["\\mathscr"] = function(buffer, node)
-		concealer.filter[0](buffer, node, filters.mathscr, "Special")
-	end,
-	["\\mathsf"] = function(buffer, node)
-		concealer.filter[0](buffer, node, filters.mathsf, "Special")
-	end,
+	["\\mathbb"] = { font = { filters.mathbb, "Special" } },
+	["\\mathcal"] = { font = { filters.mathcal, "Special" } },
+	["\\mathbbm"] = { font = { filters.mathbbm, "Special" } },
+	["\\mathfrak"] = { font = { filters.mathfrak, "Special" } },
+	["\\mathscr"] = { font = { filters.mathscr, "Special" } },
+	["\\mathsf"] = { font = { filters.mathsf, "Special" } },
 }
