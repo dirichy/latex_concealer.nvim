@@ -53,6 +53,7 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 		end
 	end
 	local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
+	cursor_row = cursor_row - 1
 	if
 		(cursor_row > start_row or cursor_row == start_row and cursor_col > start_col - 1)
 		and (cursor_row < end_row or cursor_row == end_row and cursor_col < end_col + 1)
