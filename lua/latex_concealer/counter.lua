@@ -4,16 +4,16 @@ local enums = { "enumi", "enumii", "enumiii", "enumiv" } --counter
 M.config = {
 	numbering = require("latex_concealer.numbering"),
 	the = {
-		chapter = { "\\zhnum{chapter}、", "ErrorMsg" },
-		section = { "\\Roman{chapter}.\\roman{section} ", "Constant" },
-		subsection = { "\\arabic{chapter}.\\arabic{section}.\\arabic{subsection} ", "DiagnosticHint" },
+		chapter = { "\\Roman{chapter} ", "ErrorMsg" },
+		section = { "\\arabic{section} ", "Constant" },
+		subsection = { "\\arabic{section}.\\arabic{subsection} ", "DiagnosticHint" },
 		subsubsection = {
-			"\\arabic{chapter}.\\arabic{section}.\\arabic{subsection}\\alph{subsubsection} ",
+			"\\arabic{section}.\\arabic{subsection}.\\alph{subsubsection} ",
 			"Special",
 		},
-		enumi = { "\\zhdig{section}.\\Roman{enumi}.", "ErrorMsg" },
-		enumii = { "\\Roman{enumi}.\\Alph{enumii}", "Constant" },
-		enumiii = { "\\Roman{enumi}.\\Alph{enumii}(\\zhdig{enumiii})", "DiagnosticHint" },
+		enumi = { "\\arabic{enumi}.", "ErrorMsg" },
+		enumii = { "(\\arabic{enumii})", "Constant" },
+		enumiii = { "\\alph{enumiii}", "DiagnosticHint" },
 		enumiv = { "\\fnsymbol{enumiv}", "Special" },
 		error = { "DON'T NEST LIST MORE THAN FOUR LAYER", "ErrorMsg" },
 	},
