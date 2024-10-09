@@ -34,7 +34,7 @@ local function frac_handler(buffer, node)
 	end
 	local up = vim.treesitter.get_node_text(arg_nodes[1], buffer):sub(2, -2)
 	local down = vim.treesitter.get_node_text(arg_nodes[2], buffer):sub(2, -2)
-	if string.match(up .. down, "[-]?[0-9-]*") then
+	if string.match(up .. down, "^[-]?[0-9-]*$") then
 		up = up:gsub(".", superscript_tbl)
 		down = down:gsub(".", subscript_tbl)
 		return { up .. "/" .. down, "Constant" }
