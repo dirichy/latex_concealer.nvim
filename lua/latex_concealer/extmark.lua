@@ -52,6 +52,13 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 			M.cache[buffer].extmark[extmark[1]] = nil
 		end
 	end
+	local cursor_row, cursor_col = vim.api.nvim_win_get_cursor(0)
+	if
+		(cursor_row > start_row or cursor_row == start_row and cursor_col > start_col - 1)
+		and (cursor_row < end_row or cursor_row == end_row and cursor_col < end_col + 1)
+	then
+		return
+	end
 	vim.api.nvim_buf_set_extmark(buffer, ns_id, start_row, start_col, opts)
 end
 
