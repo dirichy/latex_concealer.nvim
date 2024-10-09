@@ -48,6 +48,7 @@ return {
 	["\\frac"] = frac_handler,
 	["\\dfrac"] = frac_handler,
 	["\\tfrac"] = frac_handler,
+	["\\norm"] = { delim = { { "‖", "Special" }, { "‖", "Special" } } },
 	["\\abs"] = { delim = { { "|", "Special" }, { "|", "Special" } } },
 	--fonts
 	["\\mathbb"] = { font = { filters.mathbb, "Special" } },
