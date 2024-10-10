@@ -1,4 +1,5 @@
-local util = require("latex_concealer.util")
+local util = require("latex_concealer.extmark")
+local counter = require("latex_concealer.counter")
 local concealer = require("latex_concealer.handler.util").conceal
 local filters = require("latex_concealer.filters")
 local subscript_tbl = {
@@ -74,4 +75,18 @@ return {
 		end,
 		"Normal",
 	} },
+	--other
+	["\\footnote"] = function(buffer, node)
+		counter.step_counter(buffer, "footnote")
+		local arg_nodes = node:field("arg")
+		if #arg_nodes < 2 then
+			return
+		end
+		local a, b = node:range()
+		local _, _, c, d = arg_nodes[1]:range()
+		d = d + 1
+		util.multichar_conceal(buffer, { a, b, c, d }, { counter.the(buffer, "footnote"), "Special" })
+		_, _, a, b = arg_nodes[2]:range()
+		util.multichar_conceal(buffer, { a, b - 1, a, b }, "")
+	end,
 }

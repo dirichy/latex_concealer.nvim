@@ -15,8 +15,8 @@ return {
 	end,
 	arabic = tostring,
 	fnsymbol = function(index)
-		local fnsymbol_table = { "∗", "†", "‡", "§", "¶", "‖", "∗∗", "††", "‡‡" }
-		return fnsymbol_table[index] or "fnsymbol should in 1-9"
+		local fnsymbol_table = { [0] = "‡‡", "∗", "†", "‡", "§", "¶", "‖", "∗∗", "††" }
+		return fnsymbol_table[index % 9] or "error"
 	end,
 	zhdig = function(index)
 		if index <= 0 then

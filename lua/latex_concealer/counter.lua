@@ -11,6 +11,7 @@ M.config = {
 			"\\arabic{section}.\\arabic{subsection}.\\alph{subsubsection} ",
 			"Special",
 		},
+		footnote = { "\\fnsymbol{footnote}", "Special" },
 		enumi = { "\\arabic{enumi}.", "ErrorMsg" },
 		enumii = { "(\\arabic{enumii})", "Constant" },
 		enumiii = { "\\alph{enumiii}", "DiagnosticHint" },
@@ -29,6 +30,7 @@ M.config = {
 		enumii = { value = 0, refresh = { "enumiii" } },
 		enumiii = { value = 0, refresh = { "enumiv" } },
 		enumiv = { value = 0 },
+		footnote = { value = 0 },
 		error = { value = 0 },
 		chapter = { value = 0, refresh = { "section" } },
 		section = { value = 0, refresh = { "subsection" } },
@@ -40,8 +42,7 @@ M.config = {
 
 M.cache = {}
 
-function M.the(buffer, counter_name, heading)
-	heading = heading or ""
+function M.the(buffer, counter_name)
 	local counters = M.cache[buffer].counters
 	local _counters = M.cache[buffer]._counters
 	if counter_name == "item" then --counter
@@ -71,7 +72,7 @@ function M.the(buffer, counter_name, heading)
 			function(numbering, count) --counter
 				return M.config.numbering[numbering](counters[count] or 0) --counter
 			end --counter
-		) .. heading, --counter
+		),
 		M.config.the[counter_name][2], --counter
 	} --counter
 end
