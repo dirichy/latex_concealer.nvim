@@ -80,6 +80,12 @@ return {
 	["\\arcsin"] = { "arcsin", "Constant" },
 	["\\gcd"] = { "gcd", "Constant" },
 	["\\deg"] = { "deg", "Constant" },
+	["\\exp"] = { "exp", "Constant" },
+	["\\sup"] = { "sup", "Constant" },
+	["\\inf"] = { "inf", "Constant" },
+	["\\d"] = { "d", "Constant" },
+	["\\ln"] = { "ln", "Constant" },
+	["\\log"] = { "log", "Constant" },
 	--Operator
 	["\\approx"] = { "≈", "Operator" },
 	["\\cap"] = { "∩", "Operator" },
