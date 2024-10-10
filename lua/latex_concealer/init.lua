@@ -19,6 +19,9 @@ local function command_expand(buffer, cmd, node)
 	local result = M.config.handler.generic_command[cmd]
 	if type(result) == "function" then
 		result = result(buffer, node)
+		if not result then
+			return
+		end
 	end
 	if result[1] or type(result) == "string" then
 		return result
