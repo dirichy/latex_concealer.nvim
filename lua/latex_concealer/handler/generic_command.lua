@@ -41,11 +41,24 @@ local function frac_handler(buffer, node)
 	end
 	return { delim = { { "(", "Special" }, { ")/(", "Special" }, { ")", "Special" } } }
 end
+local function overline(buffer, node, opts)
+	if not node:field("arg") or not node:field("arg")[1] then
+		return
+	end
+	local text = vim.treesitter.get_node_text(node:field("arg")[1], buffer):sub(2, -2)
+	if string.match(text, "^[a-zA-Z]$") then
+		return { text .. "̅̅", "MathZone" }
+	else
+		return { delim = { { "‾", "Special" }, { "‾", "Special" } } }
+	end
+end
 return {
 	--command_delim
 	["\\frac"] = frac_handler,
 	["\\dfrac"] = frac_handler,
 	["\\tfrac"] = frac_handler,
+	["\\bar"] = overline,
+	["\\overline"] = overline,
 	["\\norm"] = { delim = { { "‖", "Special" }, { "‖", "Special" } } },
 	["\\abs"] = { delim = { { "|", "Special" }, { "|", "Special" } } },
 	--fonts
