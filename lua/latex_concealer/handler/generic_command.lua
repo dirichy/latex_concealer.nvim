@@ -47,7 +47,7 @@ local function overline(buffer, node, opts)
 	end
 	local text = vim.treesitter.get_node_text(node:field("arg")[1], buffer):sub(2, -2)
 	if string.match(text, "^[a-zA-Z]$") then
-		return { text .. "̅̅", "MathZone" }
+		return { text .. "̅", "MathZone" }
 	else
 		return { delim = { { "‾", "Special" }, { "‾", "Special" } } }
 	end
