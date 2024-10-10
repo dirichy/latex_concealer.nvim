@@ -39,9 +39,7 @@ local function frac_handler(buffer, node)
 		down = down:gsub(".", subscript_tbl)
 		return { up .. "/" .. down, "Constant" }
 	end
-	concealer.delim[1](buffer, node, { "(", "Special" })
-	concealer.delim[2](buffer, node, { ")/(", "Special" })
-	concealer.delim[3](buffer, node, { ")", "Special" })
+	return { delim = { { "(", "Special" }, { ")/(", "Special" }, { ")", "Special" } } }
 end
 return {
 	--command_delim
