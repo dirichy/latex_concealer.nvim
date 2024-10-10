@@ -46,6 +46,12 @@ end
 
 M.config = {
 	_handler = {
+		math_delimiter = function(buffer, node)
+			local left_node = node:field("left_command")[1]
+			local right_node = node:field("right_command")[1]
+			util.multichar_conceal(buffer, { node = left_node }, "")
+			util.multichar_conceal(buffer, { node = right_node }, "")
+		end,
 		label_definition = function(buffer, node)
 			local row1, col1, row2, col2 = node:range()
 			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 7 }, { "🔖(", "Special" })
