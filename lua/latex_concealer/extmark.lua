@@ -36,7 +36,7 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 	opts.virt_text = type(text) == "string" and { { text, "Conceal" } }
 		or type(text[1]) == "string" and { text }
 		or text
-		or ""
+		or { "", "" }
 	opts.end_row = end_row
 	opts.end_col = end_col
 	local extmarks = vim.api.nvim_buf_get_extmarks(

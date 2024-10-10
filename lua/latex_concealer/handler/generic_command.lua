@@ -85,7 +85,7 @@ return {
 		local a, b = node:range()
 		local _, _, c, d = arg_nodes[1]:range()
 		d = d + 1
-		util.multichar_conceal(buffer, { a, b, c, d }, { counter.the(buffer, "footnote"), "Special" })
+		util.multichar_conceal(buffer, { a, b, c, d }, counter.the(buffer, "footnote"))
 		_, _, a, b = arg_nodes[2]:range()
 		util.multichar_conceal(buffer, { a, b - 1, a, b }, "")
 	end,
