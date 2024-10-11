@@ -136,10 +136,16 @@ return {
 	["\\bigtriangleup"] = { "∆", "Operator" },
 	["\\bigvee"] = { "⋁", "Operator" },
 	["\\bigwedge"] = { "⋀", "Operator" },
-	["\\int"] = { "∫", "Operator" }, --bop
-	["\\oint"] = { "∮", "Operator" }, --bop
-	["\\prod"] = { "∏", "Operator" }, --bop
-	["\\sum"] = { "∑", "Operator" }, --bop
+	["\\int"] = { "∫", "Operator" },
+	["\\oint"] = { "∮", "Operator" },
+	["\\iint"] = { "∬", "Operator" },
+	["\\oiint"] = { "∯", "Operator" },
+	["\\iiint"] = { "∭", "Operator" },
+	["\\oiiint"] = { "∰", "Operator" },
+	["\\iiiint"] = { "∬∬", "Operator" },
+	["\\idotsint"] = { "∫⋯∫", "Operator" },
+	["\\prod"] = { "∏", "Operator" },
+	["\\sum"] = { "∑", "Operator" },
 	--arrows
 	["\\mapsto"] = { "↦", "Function" },
 	["\\Downarrow"] = { "⇓", "Function" },

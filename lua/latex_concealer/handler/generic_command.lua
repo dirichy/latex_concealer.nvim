@@ -73,7 +73,7 @@ return {
 		function(str)
 			return str
 		end,
-		"Normal",
+		"Constant",
 	} },
 	--other
 	["\\footnote"] = function(buffer, node)
