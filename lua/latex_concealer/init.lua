@@ -108,8 +108,16 @@ M.config = {
 				counter.cache[buffer].counters.item = counter.cache[buffer].counters.item + 1
 			end
 			node = node:child(0)
-			local virt_text, hili = counter.the(buffer, "item")
+			local virt_text, cur_counter = counter.the(buffer, "item")
+			local hili
 			if virt_text then
+				if type(cur_counter) == "number" then
+					hili = highlight.itemize[cur_counter]
+				elseif type(cur_counter) == "string" then
+					hili = highlight.enumerate[cur_counter]
+				else
+					return
+				end
 				util.multichar_conceal(buffer, { node = node }, { virt_text, hili })
 			end
 		end,
