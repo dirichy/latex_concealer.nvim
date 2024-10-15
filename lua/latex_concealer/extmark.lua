@@ -12,7 +12,7 @@ M.config = {
 		section = "Constant",
 		subsection = "DiagnosticHint",
 		subsubsection = "Special",
-		enumerate = { "ErrorMsg", "Constant", "DiagnosticHint", "Specail" },
+		enumerate = { enumi = "ErrorMsg", enumii = "Constant", enumiii = "DiagnosticHint", enumiv = "Specail" },
 		itemize = { "ErrorMsg", "Constant", "DiagnosticHint", "Specail" },
 		greek = "MathGreek",
 		operatorname = "Constant",
