@@ -1,5 +1,7 @@
 local concealer = require("latex_concealer.handler.util").conceal
 local filters = require("latex_concealer.filters")
+local extmark = require("latex_concealer.extmark")
+local highlight = extmark.highlight
 local M = {}
 M.cache = {}
 local util = require("latex_concealer.extmark")
@@ -14,7 +16,7 @@ local function heading_handler(buffer, node)
 	local a, b = node:range()
 	local c, d, e, f = curly_group_node:range()
 	d = d + 1
-	util.multichar_conceal(buffer, { a, b, c, d }, counter.the(buffer, node_type))
+	util.multichar_conceal(buffer, { a, b, c, d }, { counter.the(buffer, node_type), highlight[node_type] })
 	util.multichar_conceal(buffer, { e, f - 1, e, f }, "")
 end
 local function command_expand(buffer, cmd, node)
@@ -54,19 +56,19 @@ M.config = {
 		end,
 		label_definition = function(buffer, node)
 			local row1, col1, row2, col2 = node:range()
-			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 7 }, { "🔖(", "Special" })
-			util.multichar_conceal(buffer, { row2, col2 - 1, row2, col2 }, { ")", "Special" })
+			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 7 }, { "🔖(", highlight.reference })
+			util.multichar_conceal(buffer, { row2, col2 - 1, row2, col2 }, { ")", highlight.reference })
 		end,
 		label_reference = function(buffer, node)
 			local row1, col1, row2, col2 = node:range()
-			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 5 }, { "🔗(", "Special" })
-			util.multichar_conceal(buffer, { row2, col2 - 1, row2, col2 }, { ")", "Special" })
+			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 5 }, { "🔗(", highlight.reference })
+			util.multichar_conceal(buffer, { row2, col2 - 1, row2, col2 }, { ")", highlight.reference })
 		end,
 		subscript = function(buffer, node)
-			concealer.script(buffer, node, filters.subscript, "Identifier")
+			concealer.script(buffer, node, filters.subscript, highlight.script)
 		end,
 		superscript = function(buffer, node)
-			concealer.script(buffer, node, filters.superscript, "Identifier")
+			concealer.script(buffer, node, filters.superscript, highlight.script)
 		end,
 		generic_command = function(buffer, node)
 			local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
@@ -138,6 +140,7 @@ M.config = {
 		},
 		enum_item = {},
 	},
+	extmark = {},
 	conceal_cursor = "nvic",
 	refresh_events = { "InsertLeave", "BufWritePost" },
 	local_refresh_events = { "TextChangedI", "TextChanged" },
@@ -241,6 +244,7 @@ end
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts)
 	counter.setup(M.config.counter)
+	extmark.setup(M.config.extmark)
 	M.setup_buf(0)
 	vim.api.nvim_create_autocmd("BufEnter", {
 		pattern = "*.tex",

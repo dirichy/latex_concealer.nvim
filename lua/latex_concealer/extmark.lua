@@ -2,6 +2,27 @@ local M = {}
 ---@type table<number,table>
 M.cache = {}
 M.config = {
+	highlight = {
+		symbol = "Special",
+		reference = "Special",
+		delim = "Special",
+		operator = "Operator",
+		hugeoperator = "Operator",
+		chapter = "ErrorMsg",
+		section = "Constant",
+		subsection = "DiagnosticHint",
+		subsubsection = "Special",
+		enumerate = { "ErrorMsg", "Constant", "DiagnosticHint", "Specail" },
+		itemize = { "ErrorMsg", "Constant", "DiagnosticHint", "Specail" },
+		greek = "MathGreek",
+		operatorname = "Constant",
+		arrow = "Function",
+		relationship = "Identifier",
+		fraction = "Constant",
+		footnotemark = "Special",
+		error = "ErrorMsg",
+		script = "Identifier",
+	},
 	ns_id = vim.api.nvim_create_namespace("latex_concealer"),
 	extmark = {
 		virt_text_pos = "inline",
@@ -113,5 +134,8 @@ function M.restore_and_gc(buffer)
 end
 function M.setup_buf(buffer)
 	M.cache[buffer] = { extmark = {} }
+end
+function M.setup(opts)
+	M.config = vim.tbl_deep_extend("force", M.config, opts)
 end
 return M

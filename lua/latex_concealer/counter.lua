@@ -4,26 +4,23 @@ local enums = { "enumi", "enumii", "enumiii", "enumiv" } --counter
 M.config = {
 	numbering = require("latex_concealer.numbering"),
 	the = {
-		chapter = { "\\Roman{chapter} ", "ErrorMsg" },
-		section = { "\\arabic{section} ", "Constant" },
-		subsection = { "\\arabic{section}.\\arabic{subsection} ", "DiagnosticHint" },
-		subsubsection = {
-			"\\arabic{section}.\\arabic{subsection}.\\alph{subsubsection} ",
-			"Special",
-		},
-		footnote = { "\\fnsymbol{footnote}", "Special" },
-		enumi = { "\\arabic{enumi}.", "ErrorMsg" },
-		enumii = { "(\\arabic{enumii})", "Constant" },
-		enumiii = { "\\alph{enumiii}", "DiagnosticHint" },
-		enumiv = { "\\fnsymbol{enumiv}", "Special" },
-		error = { "DON'T NEST LIST MORE THAN FOUR LAYER", "ErrorMsg" },
+		chapter = "\\Roman{chapter} ",
+		section = "\\arabic{section} ",
+		subsection = "\\arabic{section}.\\arabic{subsection} ",
+		subsubsection = "\\arabic{section}.\\arabic{subsection}.\\alph{subsubsection} ",
+		footnote = "\\fnsymbol{footnote}",
+		enumi = "\\arabic{enumi}.",
+		enumii = "(\\arabic{enumii})",
+		enumiii = "\\alph{enumiii}",
+		enumiv = "\\fnsymbol{enumiv}",
+		error = "DON'T NEST LIST MORE THAN FOUR LAYER",
 	},
 	unordered = {
-		{ "o", "ErrorMsg" },
-		{ "-", "Constant" },
-		{ "+", "DiagnosticHint" },
-		{ "=", "Special" },
-		{ "DON'T NEST LIST MORE THAN FOUR LAYER", "ErrorMsg" },
+		"o",
+		"-",
+		"+",
+		"=",
+		"DON'T NEST LIST MORE THAN FOUR LAYER",
 	},
 	_counters = {
 		enumi = { value = 0, refresh = { "enumii" } },
@@ -53,28 +50,22 @@ function M.the(buffer, counter_name)
 		if type(counter_name) == "number" then --counter
 			return M.config.unordered[counter_name] --counter
 		else --counter
-			return { --counter
-				string.gsub( --counter
-					M.config.the[counter_name][1], --counter
-					"\\([a-zA-Z]*){([a-zA-Z]*)}", --counter
-					function(numbering, count) --counter
-						return M.config.numbering[numbering](counters[count] or 0) --counter
-					end --counter
-				), --counter
-				M.config.the[counter_name][2], --counter
-			} --counter
+			return string.gsub( --counter
+				M.config.the[counter_name], --counter
+				"\\([a-zA-Z]*){([a-zA-Z]*)}", --counter
+				function(numbering, count) --counter
+					return M.config.numbering[numbering](counters[count] or 0) --counter
+				end --counter
+			)
 		end --counter
 	end --counter
-	return { --counter
-		string.gsub( --counter
-			M.config.the[counter_name][1], --counter
-			"\\([a-zA-Z]*){([a-zA-Z]*)}", --counter
-			function(numbering, count) --counter
-				return M.config.numbering[numbering](counters[count] or 0) --counter
-			end --counter
-		),
-		M.config.the[counter_name][2], --counter
-	} --counter
+	return string.gsub( --counter
+		M.config.the[counter_name], --counter
+		"\\([a-zA-Z]*){([a-zA-Z]*)}", --counter
+		function(numbering, count) --counter
+			return M.config.numbering[numbering](counters[count] or 0) --counter
+		end --counter
+	)
 end
 
 function M.reset_all(buffer)

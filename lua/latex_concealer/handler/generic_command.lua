@@ -1,4 +1,5 @@
-local util = require("latex_concealer.extmark")
+local extmark = require("latex_concealer.extmark")
+local highlight = extmark.config.highlight
 local counter = require("latex_concealer.counter")
 local concealer = require("latex_concealer.handler.util").conceal
 local filters = require("latex_concealer.filters")
@@ -38,9 +39,9 @@ local function frac_handler(buffer, node)
 	if string.match(up .. down, "^[-]?[0-9-]*$") then
 		up = up:gsub(".", superscript_tbl)
 		down = down:gsub(".", subscript_tbl)
-		return { up .. "/" .. down, "Constant" }
+		return { up .. "/" .. down, highlight.fraction }
 	end
-	return { delim = { { "(", "Special" }, { ")/(", "Special" }, { ")", "Special" } } }
+	return { delim = { { "(", highlight.delim }, { ")/(", highlight.delim }, { ")", highlight.delim } } }
 end
 local function overline(buffer, node, opts)
 	if not node:field("arg") or not node:field("arg")[1] then
@@ -50,7 +51,7 @@ local function overline(buffer, node, opts)
 	if string.match(text, "^[a-zA-Z]$") then
 		return { text .. "̅", "MathZone" }
 	else
-		return { delim = { { "‾", "Special" }, { "‾", "Special" } } }
+		return { delim = { { "‾", highlight.delim }, { "‾", highlight.delim } } }
 	end
 end
 return {
@@ -60,8 +61,8 @@ return {
 	["\\tfrac"] = frac_handler,
 	["\\bar"] = overline,
 	["\\overline"] = overline,
-	["\\norm"] = { delim = { { "‖", "Special" }, { "‖", "Special" } } },
-	["\\abs"] = { delim = { { "|", "Special" }, { "|", "Special" } } },
+	["\\norm"] = { delim = { { "‖", highlight.delim }, { "‖", highlight.delim } } },
+	["\\abs"] = { delim = { { "|", highlight.delim }, { "|", highlight.delim } } },
 	--fonts
 	["\\mathbb"] = { font = { filters.mathbb, "Special" } },
 	["\\mathcal"] = { font = { filters.mathcal, "Special" } },
@@ -73,7 +74,7 @@ return {
 		function(str)
 			return str
 		end,
-		"Constant",
+		highlight.operatorname,
 	} },
 	--other
 	["\\footnote"] = function(buffer, node)
@@ -85,8 +86,8 @@ return {
 		local a, b = node:range()
 		local _, _, c, d = arg_nodes[1]:range()
 		d = d + 1
-		util.multichar_conceal(buffer, { a, b, c, d }, counter.the(buffer, "footnote"))
+		extmark.multichar_conceal(buffer, { a, b, c, d }, { counter.the(buffer, "footnote"), highlight.footnote })
 		_, _, a, b = arg_nodes[2]:range()
-		util.multichar_conceal(buffer, { a, b - 1, a, b }, "")
+		extmark.multichar_conceal(buffer, { a, b - 1, a, b }, "")
 	end,
 }
