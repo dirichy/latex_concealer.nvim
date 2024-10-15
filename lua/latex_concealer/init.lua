@@ -1,7 +1,7 @@
 local concealer = require("latex_concealer.handler.util").conceal
 local filters = require("latex_concealer.filters")
 local extmark = require("latex_concealer.extmark")
-local highlight = extmark.highlight
+local highlight = extmark.config.highlight
 local M = {}
 M.cache = {}
 local util = require("latex_concealer.extmark")
