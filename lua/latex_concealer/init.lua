@@ -61,7 +61,9 @@ M.config = {
 		end,
 		label_reference = function(buffer, node)
 			local row1, col1, row2, col2 = node:range()
-			util.multichar_conceal(buffer, { row1, col1, row1, col1 + 5 }, { "🔗(", highlight.reference })
+			local text = vim.treesitter.get_node_text(node, buffer)
+			local offset = string.find(text, "{")
+			util.multichar_conceal(buffer, { row1, col1, row1, col1 + offset + 1 }, { "🔗(", highlight.reference })
 			util.multichar_conceal(buffer, { row2, col2 - 1, row2, col2 }, { ")", highlight.reference })
 		end,
 		subscript = function(buffer, node)
