@@ -86,7 +86,7 @@ return {
 		local a, b = node:range()
 		local _, _, c, d = arg_nodes[1]:range()
 		d = d + 1
-		extmark.multichar_conceal(buffer, { a, b, c, d }, { counter.the(buffer, "footnote"), highlight.footnote })
+		extmark.multichar_conceal(buffer, { a, b, c, d }, { counter.the(buffer, "footnote"), highlight.footnotemark })
 		_, _, a, b = arg_nodes[2]:range()
 		extmark.multichar_conceal(buffer, { a, b - 1, a, b }, "")
 	end,
