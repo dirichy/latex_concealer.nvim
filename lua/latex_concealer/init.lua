@@ -252,6 +252,9 @@ function M.setup_buf(buffer)
 end
 
 function M.setup(opts)
+	if vim.g.latex_concealer_disabled then
+		return
+	end
 	M.config = vim.tbl_deep_extend("force", M.config, opts)
 	counter.setup(M.config.counter)
 	extmark.setup(M.config.extmark)
