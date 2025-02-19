@@ -8,6 +8,9 @@ M.config = {
 		undo_restore = false,
 		conceal = "",
 	},
+	["if"] = {
+		mmode = false,
+	},
 }
 function M.clear(node, buffer)
 	local start_row, _, end_row = node and node:range() or 0, 0, -1
@@ -97,12 +100,13 @@ function M.restore_and_gc(buffer)
 	end
 end
 function M.setup_buf(buffer)
-	M.cache[buffer] = { extmark = {} }
+	M.cache[buffer] = { hook = {} }
+	M.cache[buffer]["if"] = vim.deepcopy(M.config["if"])
 end
 
 --- add hook to a position
 ---@param buffer number
----@param position TSNode|table
+---@param position number[]|TSNode
 ---@param callback function(number)->boolean
 ---@return boolean
 function M.hook(buffer, position, callback)
@@ -126,4 +130,20 @@ function M.hook(buffer, position, callback)
 	end
 	return true
 end
+
+function M.set_if(buffer, name, value)
+	M.cache[buffer]["if"][name] = value
+end
+
+function M.get_if(buffer, name, value)
+	return M.cache[buffer]["if"][name]
+end
+
+function M.toggle_if_rangal(buffer, name, position)
+	M.cache[buffer]["if"][name] = not M.cache[buffer]["if"][name]
+	M.hook(buffer, position, function(buf)
+		M.cache[buf]["if"][name] = not M.cache[buf]["if"][name]
+	end)
+end
+
 return M

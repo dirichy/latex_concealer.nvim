@@ -26,7 +26,7 @@ M.CMD_NODES = {
 }
 --- get node under cursor
 --- @return TSNode|nil
-M.get_node_at_cursor = require("nvim-treesitter.ts_utils").get_node_at_cursor
+M.get_node_at_cursor = vim.treesitter.get_node
 
 M.node_parent = function(node, bufer)
 	return node:parent()

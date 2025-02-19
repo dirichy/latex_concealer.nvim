@@ -51,6 +51,7 @@
 \(\| \lVert \rVert \ast \backslash \bowtie \bullet \copyright \dagger \dashv \ddagger \diamond \frown \gg \hookleftarrow \hookrightarrow \lmoustache \P \prime \quad \qquad \rmoustache \smile \star \surd \top \triangleleft \triangleright \lvert \rvert \).
 % fractions
 \(\frac{12345}{67890} \dfrac{-999}{-123} \tfrac{11}{22} \frac{a}{b} \frac{\alpha}{\beta} \frac{\frac{\frac{1}{2}}{\frac{3}{4}}}{\frac{\frac{5}{6}}{\frac{7}{8}}}\).
+\(\sqrt{\frac{\frac{\frac{\frac{1}{1}}{\frac{2}{2}}}{\frac{\frac{3}{3}}{\frac{4}{4}}}}{\frac{\frac{\frac{5}{5}}{\frac{6}{6}}}{\frac{\frac{7}{7}}{\frac{8}{8}}}}}\)
 % overline
 \(\overline{a} \overline{b} \overline{c} \overline{abcde}  \overline{\pi} \).
 % mathfonts
@@ -67,6 +68,41 @@ We can insert another \footnote{This is another footnote}{footnote} in paragraph
 \ref{test}
 \eqref{test}
 \Cref{test}
+% script
+% script will not be concealed in text mode
+a_a a_1
+% script will be concealed in math mode
+
+\(a_a a_1 a_2 a_{12} a_{aaa} a^1 a^2 a^a \)
+% but some character has no script style, so they will not be concealed
+\(\alpha\)
+\(a_\phi a_b\)
+
+% math environments
+\begin{equation}\label{equ:1}
+  a_a
+\end{equation}
+
+\begin{align}
+  a_a
+\end{align}
+
+\begin{equation}
+  \begin{aligned}
+    a_a
+  \end{aligned}
+\end{equation}
+what is it.
+\begin{gather}
+  a_a
+\end{gather}
+\begin{align*}
+  a_a
+\end{align*}
+
+\begin{split}
+  a_a
+\end{split}
 \end{document}
 
 

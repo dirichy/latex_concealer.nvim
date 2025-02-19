@@ -1,6 +1,6 @@
 local M = {}
 local enums = { "enumi", "enumii", "enumiii", "enumiv" } --counter
-
+local util = require("latex_concealer.util")
 M.config = {
 	numbering = require("latex_concealer.numbering"),
 	the = {
@@ -41,6 +41,9 @@ M.config = {
 M.cache = {}
 
 function M.the(buffer, counter_name)
+	if not M.config.the[counter_name] then
+		M.config.the[counter_name] = "\\arabic{" .. counter_name .. "}"
+	end
 	local counters = M.cache[buffer].counters
 	local _counters = M.cache[buffer]._counters
 	if counter_name == "item" then
@@ -51,13 +54,13 @@ function M.the(buffer, counter_name)
 		if type(counter_name) == "number" then
 			return M.config.unordered[counter_name], counter_name
 		else
-			return string.gsub(M.config.the[counter_name], "\\([a-zA-Z]*){([a-zA-Z]*)}", function(numbering, count)
+			return string.gsub(M.config.the[counter_name], "\\([a-zA-Z]*){([a-zA-Z_]*)}", function(numbering, count)
 				return M.config.numbering[numbering](counters[count] or 0)
 			end),
 				counter_name
 		end
 	end
-	return string.gsub(M.config.the[counter_name], "\\([a-zA-Z]*){([a-zA-Z]*)}", function(numbering, count)
+	return string.gsub(M.config.the[counter_name], "\\([a-zA-Z]*){([a-zA-Z_]*)}", function(numbering, count)
 		return M.config.numbering[numbering](counters[count] or 0)
 	end),
 		counter_name
@@ -108,12 +111,22 @@ function M.setup_buf(buffer, opts)
 	}
 end
 
+function M.get(buffer, counter_name)
+	return M.cache[buffer].counters[counter_name]
+end
 function M.step_counter(buffer, counter_name)
 	M.cache[buffer].counters[counter_name] = M.cache[buffer].counters[counter_name] + 1
 end
 
 function M.reverse_counter(buffer, counter_name)
 	M.cache[buffer].counters[counter_name] = M.cache[buffer].counters[counter_name] - 1
+end
+
+function M.step_counter_rangal(buffer, counter_name, position)
+	M.step_counter(buffer, counter_name)
+	util.hook(buffer, position, function(buf)
+		M.reverse_counter(buf, counter_name)
+	end)
 end
 
 function M.reset_counter(buffer, counter_name)

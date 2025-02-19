@@ -1,12 +1,15 @@
+local counter = require("latex_concealer.counter")
 local M = {}
 ---@type table<number,table>
 M.cache = {}
 M.config = {
 	highlight = {
+		rainbow = { "Special", "Operator", "ErrorMsg", "MathGreek" },
 		constant = "Constant",
 		symbol = "Special",
 		reference = "Special",
-		delim = "Special",
+		_delim = "Special",
+		delim = "_delim",
 		operator = "Operator",
 		hugeoperator = "Operator",
 		chapter = "ErrorMsg",
@@ -31,6 +34,7 @@ M.config = {
 		undo_restore = false,
 		conceal = "",
 	},
+	rainbow = true,
 }
 function M.clear(node, buffer)
 	local start_row, _, end_row = node and node:range() or 0, 0, -1
@@ -58,9 +62,14 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 	opts.virt_text = type(text) == "string" and { { text, "Conceal" } }
 		or type(text[1]) == "string" and { text }
 		or text
-		or { "", "" }
+		or { { "", "" } }
 	opts.end_row = end_row
 	opts.end_col = end_col
+	for _, value in ipairs(opts.virt_text) do
+		if value[2] == "_delim" then
+			value[2] = M.config.rainbow and M.config.highlight.rainbow[counter.get(buffer, "_bracket")] or "Special"
+		end
+	end
 	local extmarks = vim.api.nvim_buf_get_extmarks(
 		buffer,
 		ns_id,

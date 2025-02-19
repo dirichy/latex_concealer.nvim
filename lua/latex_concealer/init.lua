@@ -34,6 +34,7 @@ local function command_expand(buffer, cmd, node)
 			return concealer.font(buffer, node, result.font[1], result.font[2], result.font.opts)
 		end
 		if result.delim then
+			counter.step_counter_rangal(buffer, "_bracket", node)
 			for k, v in pairs(result.delim) do
 				concealer.delim[k](buffer, node, v)
 			end
@@ -45,7 +46,27 @@ local function command_expand(buffer, cmd, node)
 		end
 	end
 end
-
+local function mmode_handler(buffer, node)
+	local a, b, c, d = node:range()
+	local mmode = util.get_if(buffer, "mmode")
+	if node:type() == "math_environment" then
+		extmark.multichar_conceal(buffer, { node = node:field("begin")[1] }, not mmode and {
+			{
+				vim.treesitter.get_node_text(node:field("begin")[1]:field("name")[1], buffer):sub(2, -2),
+				extmark.config.highlight.arrow,
+			},
+		} or "")
+		extmark.multichar_conceal(buffer, { node = node:field("end")[1] }, "")
+	else
+		local delim_length = #node:child(0):type()
+		extmark.multichar_conceal(buffer, { a, b, a, b + delim_length }, "")
+		extmark.multichar_conceal(buffer, { c, d - delim_length, c, d }, "")
+	end
+	if mmode then
+		return
+	end
+	util.toggle_if_rangal(buffer, "mmode", { c, d })
+end
 M.config = {
 	_handler = {
 		math_delimiter = function(buffer, node)
@@ -123,6 +144,9 @@ M.config = {
 				extmark.multichar_conceal(buffer, { node = node }, { virt_text, hili })
 			end
 		end,
+		inline_formula = mmode_handler,
+		displayed_equation = mmode_handler,
+		math_environment = mmode_handler,
 	},
 	handler = {
 		---@type table<string,string[]|string>
@@ -132,6 +156,9 @@ M.config = {
 		section = {},
 		subsection = {},
 		subsubsection = {},
+		inline_formula = {},
+		displayed_equation = {},
+		math_environment = {},
 		begin = {
 			enumerate = function(buffer, node)
 				counter.item_depth_change(buffer, true, 1)
@@ -170,8 +197,8 @@ function M.conceal(buffer, root)
 	counter.reset_all(buffer)
 	for _, node in query:iter_captures(root, buffer) do
 		local _, _, c, d = vim.treesitter.get_node_range(node)
-		local hook = M.cache[buffer].hook
-		while c > hook[#hook].pos[1] or c == hook[#hook].pos[1] and d > hook[#hook].pos[2] do
+		local hook = util.cache[buffer].hook
+		while #hook > 0 and (c > hook[#hook].pos[1] or c == hook[#hook].pos[1] and d > hook[#hook].pos[2]) do
 			table.remove(hook).callback(buffer)
 		end
 		local node_type = node:type()
@@ -215,7 +242,7 @@ function M.setup_buf(buffer)
 	if M.cache[buffer] then
 		return
 	end
-	M.cache[buffer] = { hook = {} }
+	M.cache[buffer] = true
 	buffer = buffer and (type(buffer) == "number" and buffer or buffer.buf) or vim.api.nvim_get_current_buf()
 	if M.config.refresh_events then
 		vim.api.nvim_create_autocmd(M.config.refresh_events, {
@@ -243,6 +270,7 @@ function M.setup_buf(buffer)
 	end
 	counter.setup_buf(buffer)
 	extmark.setup_buf(buffer)
+	util.setup_buf(buffer)
 	M.refresh(buffer)
 	if M.config.conceal_cursor then
 		vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { scope = "local" })
@@ -258,7 +286,7 @@ function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts)
 	counter.setup(M.config.counter)
 	extmark.setup(M.config.extmark)
-	M.setup_buf(vim.api.nvim_get_current_buf(0))
+	M.setup_buf(vim.api.nvim_get_current_buf())
 	vim.api.nvim_create_autocmd("BufEnter", {
 		pattern = "*.tex",
 		callback = M.setup_buf,

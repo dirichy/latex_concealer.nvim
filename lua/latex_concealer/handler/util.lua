@@ -1,5 +1,6 @@
 local M = {}
-local util = require("latex_concealer.extmark")
+local extmark = require("latex_concealer.extmark")
+local util = require("latex_concealer.util")
 M.conceal = {
 	font = function(buffer, node, filter, hilight, opts)
 		opts = opts or {}
@@ -38,6 +39,9 @@ M.conceal = {
 	---@param hilight string # hilight group
 	---@return any
 	script = function(buffer, node, filter, hilight)
+		if not util.get_if(buffer, "mmode") then
+			return
+		end
 		local arg_node = node:named_child(0)
 		if not arg_node then
 			return
@@ -55,7 +59,7 @@ M.conceal = {
 				return letter
 			end
 		end)
-		return flag and util.multichar_conceal(buffer, { node = node }, { text, hilight }) or false
+		return flag and extmark.multichar_conceal(buffer, { node = node }, { text, hilight }) or false
 	end,
 	delim = setmetatable({
 		[1] = function(buffer, node, virt_text)
@@ -66,7 +70,7 @@ M.conceal = {
 			end
 			local start_row, start_col = command_name:range()
 			local end_row, end_col = arg_nodes[1]:range()
-			util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
+			extmark.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
 		end,
 	}, {
 		__index = function(t, key)
@@ -84,7 +88,7 @@ M.conceal = {
 					end_row = start_row
 					end_col = start_col
 				end
-				return util.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
+				return extmark.multichar_conceal(buffer, { start_row, start_col, end_row, end_col + 1 }, virt_text)
 			end
 			rawset(t, key, result)
 			return result
@@ -110,7 +114,7 @@ M.conceal = {
 					end
 				end
 				text = filter(text)
-				return util.multichar_conceal(buffer, { node = arg_nodes[key] }, { text, hilight })
+				return extmark.multichar_conceal(buffer, { node = arg_nodes[key] }, { text, hilight })
 			end
 			rawset(t, key, result)
 			return result
