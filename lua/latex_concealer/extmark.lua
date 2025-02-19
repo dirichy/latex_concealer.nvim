@@ -3,6 +3,7 @@ local M = {}
 M.cache = {}
 M.config = {
 	highlight = {
+		constant = "Constant",
 		symbol = "Special",
 		reference = "Special",
 		delim = "Special",

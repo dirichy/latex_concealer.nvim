@@ -63,6 +63,7 @@ return {
 	["\\overline"] = overline,
 	["\\norm"] = { delim = { { "‖", highlight.delim }, { "‖", highlight.delim } } },
 	["\\abs"] = { delim = { { "|", highlight.delim }, { "|", highlight.delim } } },
+	["\\sqrt"] = { delim = { { "√(", highlight.delim }, { ")", highlight.delim } } },
 	--fonts
 	["\\mathbb"] = { font = { filters.mathbb, "Special" } },
 	["\\mathcal"] = { font = { filters.mathcal, "Special" } },
@@ -75,6 +76,12 @@ return {
 			return str
 		end,
 		highlight.operatorname,
+	} },
+	["\\mathrm"] = { font = {
+		function(str)
+			return str
+		end,
+		highlight.constant,
 	} },
 	--other
 	["\\footnote"] = function(buffer, node)

@@ -99,4 +99,31 @@ end
 function M.setup_buf(buffer)
 	M.cache[buffer] = { extmark = {} }
 end
+
+--- add hook to a position
+---@param buffer number
+---@param position TSNode|table
+---@param callback function(number)->boolean
+---@return boolean
+function M.hook(buffer, position, callback)
+	local pos
+	if type(position) ~= "table" then
+		local _, _, c, d = vim.treesitter.get_node_range(position)
+		pos = { c, d }
+	else
+		pos = position
+	end
+	local flag
+	for index, value in ipairs(M.cache[buffer].hook) do
+		if pos[1] > value.pos[1] or pos[1] == value.pos[1] and pos[2] > value.pos[2] then
+			table.insert(M.cache[buffer].hook, index, { pos = pos, callback = callback })
+			flag = true
+			break
+		end
+	end
+	if not flag then
+		table.insert(M.cache[buffer].hook, { pos = pos, callback = callback })
+	end
+	return true
+end
 return M

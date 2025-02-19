@@ -87,7 +87,6 @@ return {
 	end,
 	Roman = function(index)
 		if index <= 0 or index > 3999 then
-			print(index)
 			return "Roman should in 1-3999"
 		end
 		local roman_table = { { "I", "V" }, { "X", "L" }, { "C", "D" }, { "M" } }

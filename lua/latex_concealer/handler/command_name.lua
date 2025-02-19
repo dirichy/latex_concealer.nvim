@@ -74,6 +74,7 @@ return {
 	["\\{"] = { "{", highlight.delim },
 	["\\}"] = { "}", highlight.delim },
 	--debackslash
+	["\\sgn"] = { "sgn", highlight.operatorname },
 	["\\sin"] = { "sin", highlight.operatorname },
 	["\\cos"] = { "cos", highlight.operatorname },
 	["\\tan"] = { "tan", highlight.operatorname },
@@ -148,6 +149,7 @@ return {
 	["\\prod"] = { "∏", highlight.hugeoperator },
 	["\\sum"] = { "∑", highlight.hugeoperator },
 	--arrows
+	["\\implies"] = { "⇒", highlight.arrow }, --re
 	["\\mapsto"] = { "↦", highlight.arrow },
 	["\\Downarrow"] = { "⇓", highlight.arrow },
 	["\\nearrow"] = { "↗", highlight.arrow },

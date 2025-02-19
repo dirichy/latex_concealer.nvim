@@ -23,6 +23,7 @@ M.config = {
 		"DON'T NEST LIST MORE THAN FOUR LAYER",
 	},
 	_counters = {
+		_bracket = { value = 0 },
 		enumi = { value = 0, refresh = { "enumii" } },
 		enumii = { value = 0, refresh = { "enumiii" } },
 		enumiii = { value = 0, refresh = { "enumiv" } },
@@ -109,6 +110,10 @@ end
 
 function M.step_counter(buffer, counter_name)
 	M.cache[buffer].counters[counter_name] = M.cache[buffer].counters[counter_name] + 1
+end
+
+function M.reverse_counter(buffer, counter_name)
+	M.cache[buffer].counters[counter_name] = M.cache[buffer].counters[counter_name] - 1
 end
 
 function M.reset_counter(buffer, counter_name)

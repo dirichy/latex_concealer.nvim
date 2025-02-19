@@ -1,25 +1,6 @@
 %arara: xelatex
 \documentclass{ctexart}
 \usepackage{amsmath,amssymb,amsthm,bbm}
-\newtheorem{definition}{Definition}
-\newtheorem{theorem}{Theorem}
-\everymath{\displaystyle}
-\newlength\inlineHeight
-\newlength\inlineWidth
-\long\def\(#1\){%
-  \settoheight{\inlineHeight}{$#1$}
-  \settowidth{\inlineWidth}{$#1$}
-  \ifdim \inlineWidth > 0.5\textwidth
-  $$#1$$
-  \else
-  \ifdim \inlineHeight > 1.5em
-  $$#1$$
-  \else
-  $#1$
-  \fi
-  \fi
-}
-
 \begin{document}
 % headings
 \chapter{test}
@@ -57,13 +38,13 @@
 % greek alphabet
 \(\alpha\beta\gamma\delta\epsilon\varepsilon\zeta\eta\theta\vartheta\iota\kappa\lambda\mu\nu\xi\pi\varpi\rho\varrho\sigma\varsigma\tau\upsilon\phi\varphi\chi\psi\omega\Gamma\Delta\Theta\Lambda\Xi\Pi\Sigma\Upsilon\Phi\Chi\Psi\Omega\).
 % remove backslash
-\(\sin \cos \tan \cot \arcsin \gcd \deg \exp \sup \inf \d \ln \log \operatorname{xyz}\).
+\(\sin \cos \tan \cot \arcsin \gcd \deg \exp \sup \inf \d \ln \log \sgn \operatorname{xyz}\).
 % operators
 \(\approx \cap \cdot \circ \cup \div \land \lor \mp \nabla \neg \odot \ominus \oplus \oslash \otimes \partial \pm \Re \Im \setminus \sqcap \sqcup \times \triangle \vee \wedge \amalg \coprod \rceil \asymp \lceil \lfloor \rfloor \langle \rangle \rightleftharpoons \).
 % huge operators
 \(\bigcap \bigcirc \bigcup \bigodot \bigoplus \bigotimes \bigsqcup \bigtriangledown \bigtriangleup \bigvee \bigwedge \int \oint \iint \oiint \iiint \oiiint \iiiint \idotsint \prod \sum \).
 % arrows
-\(\mapsto \Downarrow \nearrow \nwarrow \searrow \swarrow \Uparrow \updownarrow \Updownarrow \to \uparrow \rightarrow \Rightarrow \leftarrow \Leftarrow \leftharpoondown \leftharpoonup \leftrightarrow \Leftrightarrow \gets \iff \downarrow \).
+\(\mapsto \Downarrow \nearrow \nwarrow \searrow \swarrow \Uparrow \updownarrow \Updownarrow \to \uparrow \rightarrow \Rightarrow \leftarrow \Leftarrow \leftharpoondown \leftharpoonup \leftrightarrow \Leftrightarrow \gets \iff \downarrow \implies\).
 % reletionship operators
 \(\bot \cong \doteq \equiv \ge \geq \in \le \leq \ll \mid \ne \neq \ni \nmid \notin \owns \parallel \perp \prec \preceq \propto \sim \simeq \sqsubset \sqsubseteq \sqsupset \sqsupseteq \subset \subseteq \succ \succeq \supset \supseteq \vdash \).
 % other symbols
