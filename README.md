@@ -1,9 +1,11 @@
 # latex_concealer.nvim
 More powerful conceal for latex code with neovim. 
+![](./test/SCR-20250220-sfrc.png)
 
 # dependencies
 `nvim-treesitter` and parser for latex
 
+> **Warning:** This plugin is still alpha, expect break changes and bugs! 
 # install 
 For example by `lazy.nvim`:
 ```lua 

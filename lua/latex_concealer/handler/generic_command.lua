@@ -1,4 +1,5 @@
 local extmark = require("latex_concealer.extmark")
+local util = require("latex_concealer.util")
 local highlight = extmark.config.highlight
 local counter = require("latex_concealer.counter")
 local concealer = require("latex_concealer.handler.util").conceal
@@ -55,6 +56,24 @@ local function overline(buffer, node, opts)
 	end
 end
 return {
+	["\\not"] = function(buffer, node)
+		local next = node:next_sibling()
+		if not next then
+			return
+		end
+		if next:type() == "generic_command" then
+			util.stack_not(buffer, node)
+			return
+		end
+		local nextchar = vim.treesitter.get_node_text(next, buffer):sub(1, 1)
+		local c, d = next:range()
+		local a, b, _, _ = node:range()
+		return extmark.multichar_conceal(
+			buffer,
+			{ a, b, c, d + 1 },
+			{ nextchar .. "̸", extmark.config.highlight.relationship }
+		)
+	end,
 	--command_delim
 	["\\frac"] = frac_handler,
 	["\\dfrac"] = frac_handler,

@@ -10,6 +10,7 @@ M.config = {
 	},
 	["if"] = {
 		mmode = false,
+		_handler = true,
 	},
 }
 function M.clear(node, buffer)
@@ -99,7 +100,13 @@ function M.restore_and_gc(buffer)
 		end
 	end
 end
+
+--- init for a buffer
+---@param buffer number
 function M.setup_buf(buffer)
+	if M.cache[buffer] then
+		return
+	end
 	M.cache[buffer] = { hook = {} }
 	M.cache[buffer]["if"] = vim.deepcopy(M.config["if"])
 end
@@ -131,19 +138,49 @@ function M.hook(buffer, position, callback)
 	return true
 end
 
+--- set a if variable for a buffer
+---@param buffer number
+---@param name string
+---@param value boolean
 function M.set_if(buffer, name, value)
 	M.cache[buffer]["if"][name] = value
 end
 
-function M.get_if(buffer, name, value)
+--- get if variable
+---@param buffer number
+---@param name string
+---@return boolean
+function M.get_if(buffer, name)
 	return M.cache[buffer]["if"][name]
 end
 
+--- toggle if before a position
+---@param buffer number
+---@param name string
+---@param position number[]|TSNode
 function M.toggle_if_rangal(buffer, name, position)
 	M.cache[buffer]["if"][name] = not M.cache[buffer]["if"][name]
 	M.hook(buffer, position, function(buf)
 		M.cache[buf]["if"][name] = not M.cache[buf]["if"][name]
 	end)
+end
+
+--- reinit cache for a buffer
+---@param buffer number
+function M.reset_all(buffer)
+	M.cache[buffer] = { hook = {} }
+	M.cache[buffer]["if"] = vim.deepcopy(M.config["if"])
+end
+
+function M.stack_not(buffer, node)
+	if node then
+		M.cache[buffer]["not"] = node
+	end
+	return M.cache[buffer]["not"]
+end
+
+function M.delete_stack(buffer)
+	M.cache[buffer]["not"] = nil
 end
 
 return M

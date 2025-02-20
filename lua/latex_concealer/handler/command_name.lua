@@ -239,4 +239,5 @@ return {
 	["\\triangleright"] = { "⊳", highlight.symbol },
 	["\\lvert"] = { "|", highlight.delim },
 	["\\rvert"] = { "|", highlight.delim },
+	["\\ae"] = { "æ", highlight.symbol },
 }

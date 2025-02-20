@@ -3,9 +3,9 @@ local filters = require("latex_concealer.filters")
 local extmark = require("latex_concealer.extmark")
 local util = require("latex_concealer.util")
 local highlight = extmark.config.highlight
+local counter = require("latex_concealer.counter")
 local M = {}
 M.cache = {}
-local counter = require("latex_concealer.counter")
 local function heading_handler(buffer, node)
 	local node_type = node:type()
 	counter.step_counter(buffer, node_type)
@@ -106,8 +106,29 @@ M.config = {
 		command_name = function(buffer, node)
 			local command_name = vim.treesitter.get_node_text(node, buffer)
 			local expanded = M.config.handler.command_name[command_name]
+			if not expanded then
+				return
+			end
 			if expanded then
-				extmark.multichar_conceal(buffer, { node = node }, expanded)
+				---@type TSNode
+				local not_node = util.stack_not(buffer)
+				local range = { node = node }
+				if not_node then
+					if node:equal(not_node:next_sibling():field("command")[1]) then
+						if type(expanded) == "string" then
+							expanded = expanded .. "̸"
+						else
+							expanded[1] = expanded[1] .. "̸"
+						end
+						local a, b = not_node:range()
+						local _, _, c, d = node:range()
+						range = { a, b, c, d }
+					else
+						util.delete_stack(buffer)
+					end
+				end
+				extmark.multichar_conceal(buffer, range, expanded)
+				return
 			end
 		end,
 		chapter = heading_handler,
@@ -201,18 +222,22 @@ function M.conceal(buffer, root)
 		while #hook > 0 and (c > hook[#hook].pos[1] or c == hook[#hook].pos[1] and d > hook[#hook].pos[2]) do
 			table.remove(hook).callback(buffer)
 		end
-		local node_type = node:type()
-		if M.config._handler[node_type] then
-			M.config._handler[node_type](buffer, node)
+		if util.get_if(buffer, "_handler") then
+			local node_type = node:type()
+			if M.config._handler[node_type] then
+				M.config._handler[node_type](buffer, node)
+			end
 		end
 	end
 end
 
 function M.refresh(buffer)
+	print("refreshing buffer:" .. tostring(buffer))
 	vim.schedule(function()
 		vim.api.nvim_buf_clear_namespace(buffer, vim.api.nvim_create_namespace("latex_concealer"), 0, -1)
 		counter.reset_all(buffer)
 		extmark.delete_all(buffer)
+		util.reset_all(buffer)
 		M.conceal(buffer)
 	end)
 end
@@ -238,12 +263,15 @@ M.cursor_refresh = function(buffer)
 end
 
 M.local_refresh = M.refresh
+
+--- init for a buffer
+---@param buffer table|number
 function M.setup_buf(buffer)
 	if M.cache[buffer] then
 		return
 	end
-	M.cache[buffer] = true
 	buffer = buffer and (type(buffer) == "number" and buffer or buffer.buf) or vim.api.nvim_get_current_buf()
+	M.cache[buffer] = true
 	if M.config.refresh_events then
 		vim.api.nvim_create_autocmd(M.config.refresh_events, {
 			buffer = buffer,
@@ -286,7 +314,7 @@ function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts)
 	counter.setup(M.config.counter)
 	extmark.setup(M.config.extmark)
-	M.setup_buf(vim.api.nvim_get_current_buf())
+	M.setup_buf({ buf = vim.api.nvim_get_current_buf() })
 	vim.api.nvim_create_autocmd("BufEnter", {
 		pattern = "*.tex",
 		callback = M.setup_buf,

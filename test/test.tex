@@ -1,6 +1,8 @@
 %arara: xelatex
-\documentclass{ctexart}
-\usepackage{amsmath,amssymb,amsthm,bbm}
+\documentclass{ctexbook}
+\usepackage{amsmath,amssymb,amsthm,bbm,esint,fixdif,cleveref}
+\usepackage[charter]{mathdesign}
+\DeclareMathOperator{\sgn}{sgn}
 \begin{document}
 % headings
 \chapter{test}
@@ -36,41 +38,54 @@
     \end{itemize}
 \end{itemize}
 % greek alphabet
-\(\alpha\beta\gamma\delta\epsilon\varepsilon\zeta\eta\theta\vartheta\iota\kappa\lambda\mu\nu\xi\pi\varpi\rho\varrho\sigma\varsigma\tau\upsilon\phi\varphi\chi\psi\omega\Gamma\Delta\Theta\Lambda\Xi\Pi\Sigma\Upsilon\Phi\Chi\Psi\Omega\).
+\(\alpha\beta\gamma\delta\epsilon\varepsilon\zeta\eta\theta\vartheta\iota\kappa\lambda\mu\nu\xi\pi\varpi\rho\varrho\sigma\varsigma\tau\upsilon\phi\varphi\chi\psi\omega\Gamma\Delta\Theta\Lambda\Xi\Pi\Sigma\Upsilon\Phi\Psi\Omega\).
+
 % remove backslash
 \(\sin \cos \tan \cot \arcsin \gcd \deg \exp \sup \inf \d \ln \log \sgn \operatorname{xyz}\).
+
 % operators
 \(\approx \cap \cdot \circ \cup \div \land \lor \mp \nabla \neg \odot \ominus \oplus \oslash \otimes \partial \pm \Re \Im \setminus \sqcap \sqcup \times \triangle \vee \wedge \amalg \coprod \rceil \asymp \lceil \lfloor \rfloor \langle \rangle \rightleftharpoons \).
+
 % huge operators
 \(\bigcap \bigcirc \bigcup \bigodot \bigoplus \bigotimes \bigsqcup \bigtriangledown \bigtriangleup \bigvee \bigwedge \int \oint \iint \oiint \iiint \oiiint \iiiint \idotsint \prod \sum \).
+
 % arrows
 \(\mapsto \Downarrow \nearrow \nwarrow \searrow \swarrow \Uparrow \updownarrow \Updownarrow \to \uparrow \rightarrow \Rightarrow \leftarrow \Leftarrow \leftharpoondown \leftharpoonup \leftrightarrow \Leftrightarrow \gets \iff \downarrow \implies\).
+
 % reletionship operators
 \(\bot \cong \doteq \equiv \ge \geq \in \le \leq \ll \mid \ne \neq \ni \nmid \notin \owns \parallel \perp \prec \preceq \propto \sim \simeq \sqsubset \sqsubseteq \sqsupset \sqsupseteq \subset \subseteq \succ \succeq \supset \supseteq \vdash \).
+
 % other symbols
 \(\| \lVert \rVert \ast \backslash \bowtie \bullet \copyright \dagger \dashv \ddagger \diamond \frown \gg \hookleftarrow \hookrightarrow \lmoustache \P \prime \quad \qquad \rmoustache \smile \star \surd \top \triangleleft \triangleright \lvert \rvert \).
+
 % fractions
 \(\frac{12345}{67890} \dfrac{-999}{-123} \tfrac{11}{22} \frac{a}{b} \frac{\alpha}{\beta} \frac{\frac{\frac{1}{2}}{\frac{3}{4}}}{\frac{\frac{5}{6}}{\frac{7}{8}}}\).
+
 \(\sqrt{\frac{\frac{\frac{\frac{1}{1}}{\frac{2}{2}}}{\frac{\frac{3}{3}}{\frac{4}{4}}}}{\frac{\frac{\frac{5}{5}}{\frac{6}{6}}}{\frac{\frac{7}{7}}{\frac{8}{8}}}}}\)
+
 % overline
 \(\overline{a} \overline{b} \overline{c} \overline{abcde}  \overline{\pi} \).
+
 % mathfonts
 \(\mathbb{ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890} \).
 \(\mathbbm{ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890} \).
 \(\mathcal{ABCDEFGHIJKLMNOPQRSTUVWXYZ}\).
 \(\mathscr{ABCDEFGHIJKLMNOPQRSTUVWXYZ}\).
 \(\mathfrak{ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz}\).
+
 % footnote
 We can insert \footnote{This is a footnote}{footnote} in paragraph.
 We can insert another \footnote{This is another footnote}{footnote} in paragraph.
+
 % label and reference
 \label{test}
 \ref{test}
 \eqref{test}
 \Cref{test}
+
 % script
 % script will not be concealed in text mode
-a_a a_1
+\verb|a_1|
 % script will be concealed in math mode
 
 \(a_a a_1 a_2 a_{12} a_{aaa} a^1 a^2 a^a \)
@@ -96,13 +111,13 @@ what is it.
 \begin{gather}
   a_a
 \end{gather}
+
 \begin{align*}
   a_a
 \end{align*}
 
-\begin{split}
-  a_a
-\end{split}
+\(\not=\)
+\(\not \equiv\)
 \end{document}
 
 
