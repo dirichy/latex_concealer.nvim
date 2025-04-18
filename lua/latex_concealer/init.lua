@@ -5,6 +5,11 @@ local util = require("latex_concealer.util")
 local highlight = extmark.config.highlight
 local counter = require("latex_concealer.counter")
 local M = {}
+M.enabled = true
+function M.toggle()
+	M.enabled = not M.enabled
+	M.refresh(vim.api.nvim_win_get_buf(0))
+end
 M.cache = {}
 local function heading_handler(buffer, node)
 	local node_type = node:type()
@@ -211,6 +216,9 @@ for k, _ in pairs(M.config._handler) do
 end
 local query = vim.treesitter.query.parse("latex", query_string)
 function M.conceal(buffer, root)
+	if not M.enabled then
+		return
+	end
 	if not root then
 		local tree = vim.treesitter.get_parser(buffer, "latex")
 		root = tree:trees()[1]:root()
@@ -232,7 +240,6 @@ function M.conceal(buffer, root)
 end
 
 function M.refresh(buffer)
-	print("refreshing buffer:" .. tostring(buffer))
 	vim.schedule(function()
 		vim.api.nvim_buf_clear_namespace(buffer, vim.api.nvim_create_namespace("latex_concealer"), 0, -1)
 		counter.reset_all(buffer)
