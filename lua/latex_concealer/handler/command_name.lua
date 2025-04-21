@@ -240,4 +240,5 @@ return {
 	["\\lvert"] = { "|", highlight.delim },
 	["\\rvert"] = { "|", highlight.delim },
 	["\\ae"] = { "æ", highlight.symbol },
+	["\\nolinebreak"] = { "🧲", highlight.symbol },
 }

@@ -55,6 +55,18 @@ local function overline(buffer, node, opts)
 		return { delim = { { "‾", highlight.delim }, { "‾", highlight.delim } } }
 	end
 end
+
+local function tilde(buffer, node, opts)
+	if not node:field("arg") or not node:field("arg")[1] then
+		return
+	end
+	local text = vim.treesitter.get_node_text(node:field("arg")[1], buffer):sub(2, -2)
+	if string.match(text, "^[a-zA-Z]$") then
+		return { text .. "̃", "MathZone" }
+	else
+		return { delim = { { "~", highlight.delim }, { "~", highlight.delim } } }
+	end
+end
 return {
 	["\\not"] = function(buffer, node)
 		local next = node:next_sibling()
@@ -80,6 +92,7 @@ return {
 	["\\tfrac"] = frac_handler,
 	["\\bar"] = overline,
 	["\\overline"] = overline,
+	["\\tilde"] = tilde,
 	["\\norm"] = { delim = { { "‖", highlight.delim }, { "‖", highlight.delim } } },
 	["\\abs"] = { delim = { { "|", highlight.delim }, { "|", highlight.delim } } },
 	["\\sqrt"] = { delim = { { "√(", highlight.delim }, { ")", highlight.delim } } },
