@@ -214,14 +214,19 @@ local query_string = ""
 for k, _ in pairs(M.config._handler) do
 	query_string = query_string .. " (" .. k .. ") @" .. k
 end
-local query = vim.treesitter.query.parse("latex", query_string)
+local query
 function M.conceal(buffer, root)
+	query = query or vim.treesitter.query.parse("latex", query_string)
 	if not M.enabled then
 		return
 	end
 	if not root then
 		local tree = vim.treesitter.get_parser(buffer, "latex")
-		root = tree:trees()[1]:root()
+		if tree and tree:trees() and tree:trees()[1] then
+			root = tree:trees()[1]:root()
+		else
+			return
+		end
 	end
 	counter.reset_all(buffer)
 	for _, node in query:iter_captures(root, buffer) do
@@ -306,7 +311,9 @@ function M.setup_buf(buffer)
 	counter.setup_buf(buffer)
 	extmark.setup_buf(buffer)
 	util.setup_buf(buffer)
-	M.refresh(buffer)
+	vim.defer_fn(function()
+		M.refresh(buffer)
+	end, 1000)
 	if M.config.conceal_cursor then
 		vim.api.nvim_set_option_value("concealcursor", M.config.conceal_cursor, { scope = "local" })
 	end
@@ -321,10 +328,16 @@ function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts)
 	counter.setup(M.config.counter)
 	extmark.setup(M.config.extmark)
-	M.setup_buf({ buf = vim.api.nvim_get_current_buf() })
+	vim.schedule(function()
+		M.setup_buf({ buf = vim.api.nvim_get_current_buf() })
+	end)
 	vim.api.nvim_create_autocmd("BufEnter", {
 		pattern = "*.tex",
-		callback = M.setup_buf,
+		callback = function(buffer)
+			vim.schedule(function()
+				M.setup_buf(buffer)
+			end)
+		end,
 	})
 end
 

@@ -75,6 +75,9 @@ return {
 	["\\}"] = { "}", highlight.delim },
 	--debackslash
 	["\\sgn"] = { "sgn", highlight.operatorname },
+	["\\max"] = { "max", highlight.operatorname },
+	["\\min"] = { "min", highlight.operatorname },
+	["\\lim"] = { "lim", highlight.operatorname },
 	["\\sin"] = { "sin", highlight.operatorname },
 	["\\cos"] = { "cos", highlight.operatorname },
 	["\\tan"] = { "tan", highlight.operatorname },
