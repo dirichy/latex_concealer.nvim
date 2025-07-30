@@ -80,33 +80,33 @@ function M.setup_buf(buffer, opts)
 	M.cache[buffer] = {
 		enum_depth = 0,
 		item_depth = 0,
-		counters = setmetatable({}, { --counter
-			__metatable = "LaTeX_counter[]", --counter
-			__index = function(_, key) --counter
-				if key == "item" then --counter
-					return M.cache[buffer]._counters[M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]] --counter
-							and M.cache[buffer]._counters[M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]].value --counter
-						or 0 --counter
-				end --counter
+		counters = setmetatable({}, {
+			__metatable = "LaTeX_counter[]",
+			__index = function(_, key)
+				if key == "item" then
+					return M.cache[buffer]._counters[M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]]
+							and M.cache[buffer]._counters[M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]].value
+						or 0
+				end
 				return M.cache[buffer]._counters[key] and M.cache[buffer]._counters[key].value
-					or error("No counter named " .. key) --counter
-			end, --counter
-			__newindex = function(t, key, value) --counter
-				if key == "item" then --counter
-					local counter = M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item] --counter
-					if type(counter) == "string" then --counter
-						t[M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]] = value --counter
-					end --counter
-					return --counter
-				end --counter
-				M.cache[buffer]._counters[key].value = value --counter
-				if M.cache[buffer]._counters[key].refresh then --counter
-					for _, counter in ipairs(M.cache[buffer]._counters[key].refresh) do --counter
-						t[counter] = 0 --counter
-					end --counter
-				end --counter
-			end, --counter
-		}), --counter
+					or error("No counter named " .. key)
+			end,
+			__newindex = function(t, key, value)
+				if key == "item" then
+					local counter = M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]
+					if type(counter) == "string" then
+						t[M.cache[buffer]._counters.item[#M.cache[buffer]._counters.item]] = value
+					end
+					return
+				end
+				M.cache[buffer]._counters[key].value = value
+				if M.cache[buffer]._counters[key].refresh then
+					for _, counter in ipairs(M.cache[buffer]._counters[key].refresh) do
+						t[counter] = 0
+					end
+				end
+			end,
+		}),
 		_counters = vim.tbl_deep_extend("force", vim.fn.deepcopy(M.config._counters), opts and opts._counters or {}),
 	}
 end

@@ -210,13 +210,13 @@ M.config = {
 	cursor_refresh_events = { "CursorMovedI", "CursorMoved" },
 }
 
-local query_string = ""
-for k, _ in pairs(M.config._handler) do
-	query_string = query_string .. " (" .. k .. ") @" .. k
-end
-local query
+-- local query_string = ""
+-- for k, _ in pairs(M.config._handler) do
+-- 	query_string = query_string .. " (" .. k .. ") @" .. k
+-- end
+-- local query
 function M.conceal(buffer, root)
-	query = query or vim.treesitter.query.parse("latex", query_string)
+	-- query = query or vim.treesitter.query.parse("latex", query_string)
 	if not M.enabled then
 		return
 	end
@@ -224,12 +224,13 @@ function M.conceal(buffer, root)
 		local tree = vim.treesitter.get_parser(buffer, "latex")
 		if tree and tree:trees() and tree:trees()[1] then
 			root = tree:trees()[1]:root()
-		else
-			return
+			-- else
+			-- return
 		end
 	end
-	counter.reset_all(buffer)
-	for _, node in query:iter_captures(root, buffer) do
+	-- counter.reset_all(buffer)
+	-- for _, node in query:iter_captures(root, buffer) do
+	for node in root:iter_children() do
 		local _, _, c, d = vim.treesitter.get_node_range(node)
 		local hook = util.cache[buffer].hook
 		while #hook > 0 and (c > hook[#hook].pos[1] or c == hook[#hook].pos[1] and d > hook[#hook].pos[2]) do
@@ -241,12 +242,12 @@ function M.conceal(buffer, root)
 				M.config._handler[node_type](buffer, node)
 			end
 		end
+		M.conceal(buffer, node)
 	end
 end
 
 function M.refresh(buffer)
 	vim.schedule(function()
-		vim.api.nvim_buf_clear_namespace(buffer, vim.api.nvim_create_namespace("latex_concealer"), 0, -1)
 		counter.reset_all(buffer)
 		extmark.delete_all(buffer)
 		util.reset_all(buffer)

@@ -4,7 +4,7 @@ local M = {}
 M.cache = {}
 M.config = {
 	highlight = {
-		rainbow = { "Special", "Operator", "ErrorMsg", "MathGreek" },
+		rainbow = { "Special", "Operator", "ErrorMsg", "DiagnosticHint" },
 		constant = "Constant",
 		symbol = "Special",
 		reference = "Special",
@@ -18,7 +18,7 @@ M.config = {
 		subsubsection = "Special",
 		enumerate = { enumi = "ErrorMsg", enumii = "Constant", enumiii = "DiagnosticHint", enumiv = "Special" },
 		itemize = { "ErrorMsg", "Constant", "DiagnosticHint", "Specail" },
-		greek = "MathGreek",
+		greek = "DiagnosticHint",
 		operatorname = "Constant",
 		arrow = "Function",
 		relationship = "Identifier",
@@ -70,31 +70,40 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 			value[2] = M.config.rainbow and M.config.highlight.rainbow[counter.get(buffer, "_bracket")] or "Special"
 		end
 	end
-	local extmarks = vim.api.nvim_buf_get_extmarks(
-		buffer,
-		ns_id,
-		{ start_row, start_col },
-		{ end_row, end_col },
-		{ details = true }
-	)
-	for _, extmark in ipairs(extmarks) do
-		if extmark[2] == start_row and extmark[3] == start_col then
-			opts.id = extmark[1]
-			M.cache[buffer].extmark[extmark[1]] = nil
-		end
-	end
+	-- local extmarks = vim.api.nvim_buf_get_extmarks(
+	-- 	buffer,
+	-- 	ns_id,
+	-- 	{ start_row, start_col },
+	-- 	{ end_row, end_col },
+	-- 	{ details = true }
+	-- )
+	-- for _, extmark in ipairs(extmarks) do
+	-- 	if extmark[2] == start_row and extmark[3] == start_col then
+	-- 		opts.id = extmark[1]
+	-- 		M.cache[buffer].extmark[extmark[1]] = nil
+	-- 	end
+	-- end
+	local extmark = vim.api.nvim_buf_set_extmark(buffer, ns_id, start_row, start_col, opts)
 	local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
 	cursor_row = cursor_row - 1
 	if
 		(cursor_row > start_row or cursor_row == start_row and cursor_col > start_col - 1)
 		and (cursor_row < end_row or cursor_row == end_row and cursor_col < end_col + 1)
 	then
-		return
+		M.hide_extmark(extmark, buffer)
 	end
-	vim.api.nvim_buf_set_extmark(buffer, ns_id, start_row, start_col, opts)
 end
 
+--- use in restore_and_gc to restore a extmark when the cursor is on it.
+---@param extmark number|vim.api.keyset.get_extmark_item
+---@param buffer number
 function M.hide_extmark(extmark, buffer)
+	if type(extmark) == "number" then
+		local actual_extmark =
+			vim.api.nvim_buf_get_extmark_by_id(buffer, M.config.ns_id, extmark, { details = true, hl_name = true })
+		table.insert(actual_extmark, 1, extmark)
+		extmark = actual_extmark
+	end
 	if extmark[4].conceal then
 		M.cache[buffer].extmark[extmark[1]] = vim.fn.copy(extmark[4].virt_text)
 		local opts = extmark[4]
@@ -105,28 +114,21 @@ function M.hide_extmark(extmark, buffer)
 		opts.conceal = nil
 		opts.id = extmark[1]
 		opts.ns_id = nil
-		vim.api.nvim_buf_set_extmark(
-			buffer,
-			vim.api.nvim_create_namespace("latex_concealer"),
-			extmark[2],
-			extmark[3],
-			opts
-		)
+		vim.api.nvim_buf_set_extmark(buffer, M.config.ns_id, extmark[2], extmark[3], opts)
 	end
 end
+
 function M.delete_all(buffer)
+	vim.api.nvim_buf_clear_namespace(buffer, M.config.ns_id, 0, -1)
 	M.cache[buffer].extmark = {}
 end
+--- remove extmarks when the cursor is on it, and add it back when cursor leave.
+---@param buffer number
 function M.restore_and_gc(buffer)
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	row = row - 1
 	for id, extmark in pairs(M.cache[buffer].extmark) do
-		local hided_extmark = vim.api.nvim_buf_get_extmark_by_id(
-			buffer,
-			vim.api.nvim_create_namespace("latex_concealer"),
-			id,
-			{ details = true }
-		)
+		local hided_extmark = vim.api.nvim_buf_get_extmark_by_id(buffer, M.config.ns_id, id, { details = true })
 		if not hided_extmark or not hided_extmark[3] then
 			M.cache[buffer].extmark[id] = nil
 		else
