@@ -1,5 +1,5 @@
 local M = {}
-local enums = { "enumi", "enumii", "enumiii", "enumiv" } --counter
+local enums = { "enumi", "enumii", "enumiii", "enumiv" }
 local util = require("latex_concealer.util")
 M.config = {
 	numbering = require("latex_concealer.numbering"),

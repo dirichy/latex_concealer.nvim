@@ -136,10 +136,10 @@ M.config = {
 				return
 			end
 		end,
-		chapter = heading_handler,
-		section = heading_handler,
-		subsection = heading_handler,
-		subsubsection = heading_handler,
+		chapter = { before = heading_handler },
+		section = { before = heading_handler },
+		subsection = { before = heading_handler },
+		subsubsection = { before = heading_handler },
 		begin = function(buffer, node)
 			local parent = node:parent()
 			if parent and parent:type() == "math_environment" then
