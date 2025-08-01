@@ -1,11 +1,19 @@
+> **Warning:** This plugin is still alpha, expect break changes and bugs! 
 # latex_concealer.nvim
 More powerful conceal for latex code with neovim. 
 ![](./test/SCR-20250220-sfrc.png)
 
+# features
+1. write with pure lua, and very fast. 
+1. colorful conceal and multichar conceal since we use extmark. 
+1. dynemic conceal, such as concealing `\item` into the value of counter or use rainbow color for delim. 
+1. customizable. You can add your own conceal very easy. 
+1. more flexible and exact since we use tree-sitter instead of string match. 
+1. supporting optional arg and args without curly bracket because I wrote a parse to do it. 
+
 # dependencies
 `nvim-treesitter` and parser for latex
 
-> **Warning:** This plugin is still alpha, expect break changes and bugs! 
 # install 
 For example by `lazy.nvim`:
 ```lua 
@@ -18,15 +26,13 @@ For example by `lazy.nvim`:
 ```
 
 # config
-You can pass your own options to `opts`, the default opts following:
+You can pass your own options to `opts`, here is an example. You can see default value in init.lua:
 ```lua
 M.config = {
     ---To handle matched treesitter node
 	handler = {
-		---@type table<string,string[]|string>
         ---The key is treesitter node type, value is how to treat this node. 
-        ---For generic_command, value is virt_text for conceal, see nvim_buf_set_extmark
-		generic_command = {},
+		generic_command = require("latex_concealer.handler.generic_command"),
         ---For begin, value is function(buffer,node) to do some counter-related things. 
 		begin = {
 			enumerate = function(buffer, node)
@@ -77,5 +83,7 @@ M.config = {
             { "DON'T NEST LIST MORE THAN FOUR LAYER", "ErrorMsg" },
         },
     }
+    -- You can set highlight group for every element here
+    extmark={highlight={relationship="Special",greek="Hint"}}
 }
 ```
