@@ -1,8 +1,15 @@
+---@class LaTeX.Processor
+---@field oarg boolean?
+---@field narg integer?
+---@field init ( fun(buffer:integer,node:LNode):LaTeX.Processor|function|nil )?
+---@field before ( fun(buffer:integer,node:LNode):LaTeX.Processor|function|nil )?
+---@field after (fun(buffer:integer,node:LNode):LaTeX.Processor|function|nil)?
+
 local extmark = require("latex_concealer.extmark")
 local util = require("latex_concealer.util")
 local highlight = extmark.config.highlight
 local counter = require("latex_concealer.counter")
-local concealer = require("latex_concealer.handler.util").conceal
+local concealer = require("latex_concealer.handler.util")
 local filters = require("latex_concealer.filters")
 local subscript_tbl = {
 	["-"] = "₋",
@@ -30,7 +37,7 @@ local superscript_tbl = {
 	["8"] = "⁸",
 	["9"] = "⁹",
 }
-local function frac_handler(buffer, node)
+local function frac(buffer, node)
 	local arg_nodes = node:field("arg")
 	if #arg_nodes ~= 2 then
 		return
@@ -40,9 +47,10 @@ local function frac_handler(buffer, node)
 	if string.match(up .. down, "^[-]?[0-9-]*$") then
 		up = up:gsub(".", superscript_tbl)
 		down = down:gsub(".", subscript_tbl)
-		return { up .. "/" .. down, highlight.fraction }
+		extmark.multichar_conceal(buffer, { node = node }, { up .. "/" .. down, highlight.fraction })
+		return
 	end
-	return { delim = { { "(", highlight.delim }, { ")/(", highlight.delim }, { ")", highlight.delim } } }
+	return concealer.delim({ "(", highlight.delim }, { ")/(", highlight.delim }, { ")", highlight.delim })
 end
 local function overline(buffer, node, opts)
 	if not node:field("arg") or not node:field("arg")[1] then
@@ -50,9 +58,10 @@ local function overline(buffer, node, opts)
 	end
 	local text = vim.treesitter.get_node_text(node:field("arg")[1], buffer):sub(2, -2)
 	if string.match(text, "^[a-zA-Z]$") then
-		return { text .. "̅", "MathZone" }
+		extmark.multichar_conceal(buffer, { node = node }, { text .. "̅", "MathZone" })
+		return
 	else
-		return { delim = { { "‾", highlight.delim }, { "‾", highlight.delim } } }
+		return concealer.delim({ "‾", highlight.delim }, { "‾", highlight.delim })
 	end
 end
 
@@ -62,59 +71,61 @@ local function tilde(buffer, node, opts)
 	end
 	local text = vim.treesitter.get_node_text(node:field("arg")[1], buffer):sub(2, -2)
 	if string.match(text, "^[a-zA-Z]$") then
-		return { text .. "̃", "MathZone" }
+		extmark.multichar_conceal(buffer, { node = node }, { text .. "̃", "MathZone" })
+		return
 	else
-		return { delim = { { "~", highlight.delim }, { "~", highlight.delim } } }
+		return concealer.delim({ "˜", highlight.delim }, { "˜", highlight.delim })
 	end
 end
+---@type table<string,function|LaTeX.Processor>
 return {
-	["\\not"] = function(buffer, node)
-		local next = node:next_sibling()
-		if not next then
-			return
-		end
-		if next:type() == "generic_command" then
-			util.stack_not(buffer, node)
-			return
-		end
-		local nextchar = vim.treesitter.get_node_text(next, buffer):sub(1, 1)
-		local c, d = next:range()
-		local a, b, _, _ = node:range()
-		return extmark.multichar_conceal(
-			buffer,
-			{ a, b, c, d + 1 },
-			{ nextchar .. "̸", extmark.config.highlight.relationship }
-		)
-	end,
+	["\\not"] = concealer.modify_next_char("̸", highlight.relationship, false),
+	["\\'"] = concealer.modify_next_char("́", highlight.default, false),
+	['\\"'] = concealer.modify_next_char("̈", highlight.default, false),
+	["\\`"] = concealer.modify_next_char("̀", highlight.default, false),
+	["\\="] = concealer.modify_next_char("̄", highlight.default, false),
+	["\\~"] = concealer.modify_next_char("̃", highlight.default, false),
+	["\\."] = concealer.modify_next_char("̇", highlight.default, false),
+	["\\^"] = concealer.modify_next_char("̂", highlight.default, false),
 	--command_delim
-	["\\frac"] = frac_handler,
-	["\\dfrac"] = frac_handler,
-	["\\tfrac"] = frac_handler,
-	["\\bar"] = overline,
-	["\\overline"] = overline,
-	["\\tilde"] = tilde,
-	["\\norm"] = { delim = { { "‖", highlight.delim }, { "‖", highlight.delim } } },
-	["\\abs"] = { delim = { { "|", highlight.delim }, { "|", highlight.delim } } },
-	["\\sqrt"] = { delim = { { "√(", highlight.delim }, { ")", highlight.delim } } },
+	["\\frac"] = { init = frac },
+	["\\dfrac"] = { init = frac },
+	["\\tfrac"] = { init = frac },
+	["\\bar"] = { init = overline },
+	["\\overline"] = { init = overline },
+	["\\tilde"] = { init = tilde },
+	["\\norm"] = concealer.delim("‖", "‖"),
+	["\\abs"] = concealer.delim("|", "|"),
+	["\\sqrt"] = {
+		oarg = true,
+		narg = 2,
+		init = function(buffer, node)
+			local optional_arg = node:field("optional_arg")[1]
+			if optional_arg then
+				local up_number = vim.treesitter.get_node_text(optional_arg, buffer):sub(2, -2)
+				if up_number:match("^[-]?[0-9-]*$") then
+					up_number = string.gsub(up_number, ".", superscript_tbl)
+					return concealer.delim(up_number .. "√(", ")", false)
+				end
+				return concealer.delim({ "(", highlight.delim }, { ")√(", highlight.delim }, { ")", highlight.delim })
+			else
+				return concealer.delim({ "√(", highlight.delim }, { ")", highlight.delim })
+			end
+		end,
+	},
 	--fonts
-	["\\mathbb"] = { font = { filters.mathbb, "Special" } },
-	["\\mathcal"] = { font = { filters.mathcal, "Special" } },
-	["\\mathbbm"] = { font = { filters.mathbbm, "Special" } },
-	["\\mathfrak"] = { font = { filters.mathfrak, "Special" } },
-	["\\mathscr"] = { font = { filters.mathscr, "Special" } },
-	["\\mathsf"] = { font = { filters.mathsf, "Special" } },
-	["\\operatorname"] = { font = {
-		function(str)
-			return str
-		end,
-		highlight.operatorname,
-	} },
-	["\\mathrm"] = { font = {
-		function(str)
-			return str
-		end,
-		highlight.constant,
-	} },
+	["\\mathbb"] = concealer.font(filters.mathbb, highlight.symbol),
+	["\\mathcal"] = concealer.font(filters.mathcal, highlight.symbol),
+	["\\mathbbm"] = concealer.font(filters.mathbbm, highlight.symbol),
+	["\\mathfrak"] = concealer.font(filters.mathfrak, highlight.symbol),
+	["\\mathscr"] = concealer.font(filters.mathscr, highlight.symbol),
+	["\\mathsf"] = concealer.font(filters.mathsf, highlight.symbol),
+	["\\operatorname"] = concealer.font(function(str)
+		return str
+	end, highlight.operatorname),
+	["\\mathrm"] = concealer.font(function(str)
+		return str
+	end, highlight.constant),
 	--other
 	["\\footnote"] = function(buffer, node)
 		counter.step_counter(buffer, "footnote")

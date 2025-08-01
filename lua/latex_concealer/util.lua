@@ -1,4 +1,5 @@
 local M = {}
+local LNode = require("latex_concealer.lnode")
 ---@type table<number,table>
 M.cache = {}
 M.config = {
@@ -118,8 +119,8 @@ end
 ---@return boolean
 function M.hook(buffer, position, callback)
 	local pos
-	if type(position) ~= "table" then
-		local _, _, c, d = vim.treesitter.get_node_range(position)
+	if position.range then
+		local _, _, c, d = position:range()
 		pos = { c, d }
 	else
 		pos = position
@@ -165,22 +166,108 @@ function M.toggle_if_rangal(buffer, name, position)
 	end)
 end
 
---- reinit cache for a buffer
+---reinit cache for a buffer
 ---@param buffer number
 function M.reset_all(buffer)
 	M.cache[buffer] = { hook = {} }
 	M.cache[buffer]["if"] = vim.deepcopy(M.config["if"])
 end
 
-function M.stack_not(buffer, node)
-	if node then
-		M.cache[buffer]["not"] = node
-	end
-	return M.cache[buffer]["not"]
-end
+-- function M.stack_not(buffer, node)
+-- 	if node then
+-- 		M.cache[buffer]["not"] = node
+-- 	end
+-- 	return M.cache[buffer]["not"]
+-- end
+--
+-- function M.delete_stack(buffer)
+-- 	M.cache[buffer]["not"] = nil
+-- end
 
-function M.delete_stack(buffer)
-	M.cache[buffer]["not"] = nil
+--- parse args of latex include optional and args without brackets
+---@param buffer number
+---@param node TSNode The generic_command node to find it's args
+---@param optional boolean If we should try to find an optional arg with brack
+---@param number number? The number of args, including optional arg. default is 1.
+---@return LNode
+function M.parse_args(buffer, node, optional, number)
+	if node:field("arg")[1] then
+		return node
+	end
+	local lnode = LNode:new()
+	lnode._childrens = {}
+	lnode._childrens[1] = node:field("command")[1]
+	lnode._field.command = { node:field("command")[1] }
+	lnode._field.arg = {}
+	lnode._type = "generic_command"
+	local a, b, x = node:start()
+	lnode._range = { a, b, x, a, b, x }
+	local n = 0
+	local next = node:next_sibling()
+	if optional then
+		n = n + 1
+		next = node:next_sibling()
+		if next and next:type() == "[" then
+			local optional_arg_lnode = LNode:new()
+			optional_arg_lnode._childrens = {}
+			optional_arg_lnode._childrens[1] = next
+			local nodea = node
+			local nodeb = next
+			while nodeb and nodeb:type() ~= "]" do
+				optional_arg_lnode._childrens[#optional_arg_lnode._childrens + 1] = nodeb
+				nodea = nodeb
+				nodeb = nodea:next_sibling()
+			end
+			if nodeb then
+				optional_arg_lnode._childrens[#optional_arg_lnode._childrens + 1] = nodeb
+				a, b, x = next:start()
+				local c, d, y = nodeb:end_()
+				optional_arg_lnode._range = { a, b, x, c, d, y }
+				optional_arg_lnode._type = "brack_group"
+				lnode._childrens[2] = optional_arg_lnode
+				lnode._field.optional_arg = { optional_arg_lnode }
+				node = nodeb
+			end
+		end
+	end
+	while n < number do
+		n = n + 1
+		next = node:next_sibling()
+		if not next then
+			break
+		end
+		if string.match(next:type(), "^curly_group") then
+			lnode._childrens[#lnode._childrens + 1] = next
+			lnode._field.arg[#lnode._field.arg + 1] = next
+		elseif string.match(next:type(), "generic_command") then
+			lnode._childrens[#lnode._childrens + 1] = next
+			lnode._field.arg[#lnode._field.arg + 1] = next
+		else
+			local text = vim.treesitter.get_node_text(node, buffer)
+			if #text == 1 then
+				lnode._childrens[#lnode._childrens + 1] = next
+				lnode._field.arg[#lnode._field.arg + 1] = next
+			else
+				local i = 0
+				n = n - 1
+				a, b, x = next:start()
+				while n < number and i < #text do
+					n = n + 1
+					i = i + 1
+					local arg_node = LNode:new()
+					arg_node._range = { a, b + i - 1, x + i - 1, a, b + i, x + i }
+					arg_node._type = "char"
+					lnode._childrens[#lnode._childrens + 1] = arg_node
+					lnode._field.arg[#lnode._field.arg + 1] = arg_node
+				end
+			end
+		end
+	end
+	local c, d, y = lnode._childrens[#lnode._childrens]:end_()
+	lnode._range[4] = c
+	lnode._range[5] = d
+	lnode._range[6] = y
+	return lnode
 end
 
 return M

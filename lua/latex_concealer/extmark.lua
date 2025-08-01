@@ -26,6 +26,7 @@ M.config = {
 		footnotemark = "Special",
 		error = "ErrorMsg",
 		script = "Identifier",
+		default = "Conceal",
 	},
 	ns_id = vim.api.nvim_create_namespace("latex_concealer"),
 	extmark = {
@@ -122,11 +123,25 @@ function M.delete_all(buffer)
 	vim.api.nvim_buf_clear_namespace(buffer, M.config.ns_id, 0, -1)
 	M.cache[buffer].extmark = {}
 end
---- remove extmarks when the cursor is on it, and add it back when cursor leave.
+---remove extmarks when the cursor is on it, and add it back when cursor leave.
 ---@param buffer number
 function M.restore_and_gc(buffer)
 	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
 	row = row - 1
+	local extmarks = vim.api.nvim_buf_get_extmarks(
+		buffer,
+		vim.api.nvim_create_namespace("latex_concealer"),
+		{ row, 0 },
+		{ row, col },
+		{ details = true }
+	)
+	for _, mark in ipairs(extmarks) do
+		local extstart = mark[3]
+		local extend = mark[4].end_col
+		if extstart <= col and col <= extend then
+			M.hide_extmark(mark, buffer)
+		end
+	end
 	for id, extmark in pairs(M.cache[buffer].extmark) do
 		local hided_extmark = vim.api.nvim_buf_get_extmark_by_id(buffer, M.config.ns_id, id, { details = true })
 		if not hided_extmark or not hided_extmark[3] then

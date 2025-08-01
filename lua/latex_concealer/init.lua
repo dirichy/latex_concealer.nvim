@@ -10,7 +10,7 @@ function M.toggle()
 	M.enabled = not M.enabled
 	M.refresh(vim.api.nvim_win_get_buf(0))
 end
-M.cache = {}
+M.have_setup = {}
 local function heading_handler(buffer, node)
 	local node_type = node:type()
 	counter.step_counter(buffer, node_type)
@@ -35,13 +35,16 @@ local function command_expand(buffer, cmd, node)
 	if result[1] or type(result) == "string" then
 		return result
 	else
+		if result.node then
+			node = result.node
+		end
 		if result.font then
 			return concealer.font(buffer, node, result.font[1], result.font[2], result.font.opts)
 		end
 		if result.delim then
 			counter.step_counter_rangal(buffer, "_bracket", node)
-			for k, v in pairs(result.delim) do
-				concealer.delim[k](buffer, node, v)
+			for k, v in ipairs(result.delim) do
+				concealer.delim[k](buffer, node, v, result.delim.include_optional)
 			end
 		end
 		if result.filter then
@@ -49,31 +52,13 @@ local function command_expand(buffer, cmd, node)
 				concealer.filter[k](buffer, node, v)
 			end
 		end
+		if result.conceal then
+			extmark.multichar_conceal(buffer, { node = node }, result.conceal)
+		end
 	end
-end
-local function mmode_handler(buffer, node)
-	local a, b, c, d = node:range()
-	local mmode = util.get_if(buffer, "mmode")
-	if node:type() == "math_environment" then
-		extmark.multichar_conceal(buffer, { node = node:field("begin")[1] }, not mmode and {
-			{
-				vim.treesitter.get_node_text(node:field("begin")[1]:field("name")[1], buffer):sub(2, -2),
-				extmark.config.highlight.arrow,
-			},
-		} or "")
-		extmark.multichar_conceal(buffer, { node = node:field("end")[1] }, "")
-	else
-		local delim_length = #node:child(0):type()
-		extmark.multichar_conceal(buffer, { a, b, a, b + delim_length }, "")
-		extmark.multichar_conceal(buffer, { c, d - delim_length, c, d }, "")
-	end
-	if mmode then
-		return
-	end
-	util.toggle_if_rangal(buffer, "mmode", { c, d })
 end
 M.config = {
-	_handler = {
+	processor = {
 		math_delimiter = function(buffer, node)
 			local left_node = node:field("left_command")[1]
 			local right_node = node:field("right_command")[1]
@@ -98,16 +83,47 @@ M.config = {
 		superscript = function(buffer, node)
 			concealer.script(buffer, node, filters.superscript, highlight.script)
 		end,
-		generic_command = function(buffer, node)
-			local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
-			local expanded
-			if M.config.handler.generic_command[command_name] then
-				expanded = command_expand(buffer, command_name, node)
-			end
-			if expanded then
-				extmark.multichar_conceal(buffer, { node = node }, expanded)
-			end
-		end,
+		generic_command = {
+			init = function(buffer, node)
+				local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
+				local processor = M.config.handler.generic_command[command_name]
+				if not processor then
+					return false
+				end
+				if type(processor) == "function" then
+					processor = { after = processor }
+				end
+				if processor.oarg or processor.narg then
+					node = util.parse_args(buffer, node, processor.oarg, processor.narg)
+				end
+				if processor.init then
+					processor = processor.init(buffer, node)
+				end
+				return processor, node
+			end,
+			-- before = function(buffer, node)
+			-- 	if cmd.begin then
+			-- 		cmd.begin(buffer, node)
+			-- 	end
+			-- 	local expanded
+			-- 	if M.config.handler.generic_command[command_name] then
+			-- 		expanded = command_expand(buffer, command_name, node)
+			-- 	end
+			-- 	if expanded then
+			-- 		extmark.multichar_conceal(buffer, { node = node }, expanded)
+			-- 	end
+			-- end,
+			-- after = function(buffer, node)
+			-- 	local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
+			-- 	local cmd = M.config.handler.generic_command[command_name]
+			-- 	if not cmd then
+			-- 		return
+			-- 	end
+			-- 	if cmd["end"] then
+			-- 		cmd["end"](buffer, node)
+			-- 	end
+			-- end,
+		},
 		command_name = function(buffer, node)
 			local command_name = vim.treesitter.get_node_text(node, buffer)
 			local expanded = M.config.handler.command_name[command_name]
@@ -115,23 +131,7 @@ M.config = {
 				return
 			end
 			if expanded then
-				---@type TSNode
-				local not_node = util.stack_not(buffer)
 				local range = { node = node }
-				if not_node then
-					if node:equal(not_node:next_sibling():field("command")[1]) then
-						if type(expanded) == "string" then
-							expanded = expanded .. "̸"
-						else
-							expanded[1] = expanded[1] .. "̸"
-						end
-						local a, b = not_node:range()
-						local _, _, c, d = node:range()
-						range = { a, b, c, d }
-					else
-						util.delete_stack(buffer)
-					end
-				end
 				extmark.multichar_conceal(buffer, range, expanded)
 				return
 			end
@@ -141,12 +141,22 @@ M.config = {
 		subsection = heading_handler,
 		subsubsection = heading_handler,
 		begin = function(buffer, node)
+			local parent = node:parent()
+			if parent and parent:type() == "math_environment" then
+				util.set_if(buffer, "mmode", true)
+				return
+			end
 			local env_name = vim.treesitter.get_node_text(node:field("name")[1]:field("text")[1], buffer)
 			if M.config.handler.begin[env_name] then
 				return M.config.handler.begin[env_name](buffer, node)
 			end
 		end,
 		["end"] = function(buffer, node)
+			local parent = node:parent()
+			if parent and parent:type() == "math_environment" then
+				util.set_if(buffer, "mmode", false)
+				return
+			end
 			local env_name = vim.treesitter.get_node_text(node:field("name")[1]:field("text")[1], buffer)
 			if M.config.handler["end"][env_name] then
 				return M.config.handler["end"][env_name](buffer, node)
@@ -170,12 +180,23 @@ M.config = {
 				extmark.multichar_conceal(buffer, { node = node }, { virt_text, hili })
 			end
 		end,
-		inline_formula = mmode_handler,
-		displayed_equation = mmode_handler,
-		math_environment = mmode_handler,
+		-- inline_formula = mmode_handler,
+		["\\("] = function(buffer, node)
+			util.set_if(buffer, "mmode", true)
+		end,
+		["\\)"] = function(buffer, node)
+			util.set_if(buffer, "mmode", false)
+		end,
+		["\\["] = function(buffer, node)
+			util.set_if(buffer, "mmode", true)
+		end,
+		["\\]"] = function(buffer, node)
+			util.set_if(buffer, "mmode", false)
+		end,
+		-- displayed_equation = mmode_handler,
+		-- math_environment = mmode_handler,
 	},
 	handler = {
-		---@type table<string,string[]|string>
 		generic_command = require("latex_concealer.handler.generic_command"),
 		command_name = require("latex_concealer.handler.command_name"),
 		chapter = {},
@@ -230,19 +251,69 @@ function M.conceal(buffer, root)
 	end
 	-- counter.reset_all(buffer)
 	-- for _, node in query:iter_captures(root, buffer) do
+	if not root then
+		vim.defer_fn(function()
+			M.conceal(buffer)
+		end, 1000)
+		return
+	end
 	for node in root:iter_children() do
 		local _, _, c, d = vim.treesitter.get_node_range(node)
 		local hook = util.cache[buffer].hook
 		while #hook > 0 and (c > hook[#hook].pos[1] or c == hook[#hook].pos[1] and d > hook[#hook].pos[2]) do
 			table.remove(hook).callback(buffer)
 		end
-		if util.get_if(buffer, "_handler") then
-			local node_type = node:type()
-			if M.config._handler[node_type] then
-				M.config._handler[node_type](buffer, node)
+		local node_type = node:type()
+		---@type function|table|false
+		local processor = M.config.processor[node_type]
+		if type(processor) == "function" then
+			processor = { after = processor }
+		end
+		local a, b
+		if util.get_if(buffer, "_handler") and processor then
+			if processor.init then
+				a, b = processor.init(buffer, node)
+				processor = a or processor
+			end
+			if processor.before then
+				processor.before(buffer, b or node)
 			end
 		end
 		M.conceal(buffer, node)
+		node = b or node
+		if util.get_if(buffer, "_handler") and processor then
+			if processor.after then
+				if type(node) == "table" then
+					util.hook(buffer, node, function()
+						processor.after(buffer, node)
+					end)
+				else
+					processor.after(buffer, node)
+				end
+				-- if result then
+				-- 	if type(result) ~= "table" then
+				-- 		result = { conceal = result }
+				-- 	end
+				-- 	if result.font then
+				-- 		return concealer.font(buffer, node, result.font[1], result.font[2], result.font.opts)
+				-- 	end
+				-- 	if result.delim then
+				-- 		counter.step_counter_rangal(buffer, "_bracket", node)
+				-- 		for k, v in ipairs(result.delim) do
+				-- 			concealer.delim[k](buffer, node, v, result.delim.include_optional)
+				-- 		end
+				-- 	end
+				-- 	if result.filter then
+				-- 		for k, v in pairs(result.filter) do
+				-- 			concealer.filter[k](buffer, node, v)
+				-- 		end
+				-- 	end
+				-- 	if result.conceal then
+				-- 		extmark.multichar_conceal(buffer, { node = node }, result.conceal)
+				-- 	end
+				-- end
+			end
+		end
 	end
 end
 
@@ -257,22 +328,6 @@ end
 
 M.cursor_refresh = function(buffer)
 	extmark.restore_and_gc(buffer)
-	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
-	row = row - 1
-	local extmarks = vim.api.nvim_buf_get_extmarks(
-		buffer,
-		vim.api.nvim_create_namespace("latex_concealer"),
-		{ row, 0 },
-		{ row, col },
-		{ details = true }
-	)
-	for _, mark in ipairs(extmarks) do
-		local extstart = mark[3]
-		local extend = mark[4].end_col
-		if extstart <= col and col <= extend then
-			extmark.hide_extmark(mark, buffer)
-		end
-	end
 end
 
 M.local_refresh = M.refresh
@@ -280,11 +335,11 @@ M.local_refresh = M.refresh
 --- init for a buffer
 ---@param buffer table|number
 function M.setup_buf(buffer)
-	if M.cache[buffer] then
+	if M.have_setup[buffer] then
 		return
 	end
 	buffer = buffer and (type(buffer) == "number" and buffer or buffer.buf) or vim.api.nvim_get_current_buf()
-	M.cache[buffer] = true
+	M.have_setup[buffer] = true
 	if M.config.refresh_events then
 		vim.api.nvim_create_autocmd(M.config.refresh_events, {
 			buffer = buffer,
