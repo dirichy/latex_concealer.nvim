@@ -10,9 +10,11 @@ More powerful conceal for latex code with neovim.
 1. customizable. You can add your own conceal very easy. 
 1. more flexible and exact since we use tree-sitter instead of string match. 
 1. supporting optional arg and args without curly bracket because I wrote a parse to do it. 
+1. limited support custom parser, so you can write parser for some command like `\verb`
 
 # dependencies
-`nvim-treesitter` and parser for latex
+1. `nvim-treesitter` and parser for latex
+2. `optional` a nerd font.
 
 # install 
 For example by `lazy.nvim`:
@@ -28,11 +30,27 @@ For example by `lazy.nvim`:
 # config
 You can pass your own options to `opts`, here is an example. You can see default value in init.lua:
 ```lua
+local concealer= require("latex_concealer.processor.util")
 M.config = {
     ---To handle matched treesitter node
 	processor_map = {
-        ---The key is treesitter node type, value is how to treat this node. 
-		generic_command = require("latex_concealer.processor.generic_command"),
+        ---command_name can add some simple symbols
+		command_name = {
+          ["\\my_custom_command"]={"my_custom_symbol","my_custom_hl_group"}
+        },
+        generic_command = {
+          ["\\my_custom_delim"]=concealer.delim("open","close"),
+          -- filter is a table or function used in string.gsub
+          ["\\my_custom_font_command"]=concealer.font({filter,hl}),
+          ["\\my_custom_command_with_arg"]={
+            oarg=true,
+            narg=3,
+            before=function(buffer,node)
+            end,
+            after=function(buffer,node)
+            end
+          },
+        },
         ---For begin, value is function(buffer,node) to do some counter-related things. 
 		begin = {
 			enumerate = function(buffer, node)
