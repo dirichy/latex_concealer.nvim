@@ -44,7 +44,7 @@ M.conceal = {
 		if not util.get_if(buffer, "mmode") then
 			return
 		end
-		local arg_node = node:named_child(0)
+		local arg_node = node:field("superscript")[1] or node:field("subscript")[1]
 		if not arg_node then
 			return
 		end
