@@ -77,19 +77,6 @@ function M.multichar_conceal(buffer, range, text, user_opts)
 			value[2] = M.config.rainbow and M.config.highlight.rainbow[counter.get(buffer, "_bracket")] or "Special"
 		end
 	end
-	-- local extmarks = vim.api.nvim_buf_get_extmarks(
-	-- 	buffer,
-	-- 	ns_id,
-	-- 	{ start_row, start_col },
-	-- 	{ end_row, end_col },
-	-- 	{ details = true }
-	-- )
-	-- for _, extmark in ipairs(extmarks) do
-	-- 	if extmark[2] == start_row and extmark[3] == start_col then
-	-- 		opts.id = extmark[1]
-	-- 		M.cache[buffer].extmark[extmark[1]] = nil
-	-- 	end
-	-- end
 	local extmark = vim.api.nvim_buf_set_extmark(buffer, ns_id, start_row, start_col, opts)
 	local cursor_row, cursor_col = unpack(vim.api.nvim_win_get_cursor(0))
 	cursor_row = cursor_row - 1

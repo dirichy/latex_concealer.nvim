@@ -6,18 +6,22 @@
 ---@field _field table <string,LNode[]>
 ---@field _childrens LNode[]
 ---@field _type string
-local _LNode = {
+local _LNode = setmetatable({
 	_field = {},
 	_childrens = {},
 	_type = "",
-}
+}, {
+	__tostring = function()
+		return "LNode"
+	end,
+})
 _LNode.__index = _LNode
 
 --- Returns a list of all the node's children that have the given field name.
 --- @param name string
 --- @return LNode[]
 function _LNode:field(name)
-	return self._field[name]
+	return self._field[name] or {}
 end
 --- return type
 ---@return string
@@ -74,7 +78,30 @@ end
 --- @param index integer
 --- @return LNode?
 function _LNode:child(index)
-	return self._childrens[index]
+	if index >= 0 then
+		return self._childrens[index + 1]
+	else
+		return self._childrens[#self._childrens + index]
+	end
+end
+
+function _LNode:tostring(indent)
+	indent = indent or 0
+	local str = "(" .. self:type()
+	for _ = 1, indent do
+		str = "  " .. str
+	end
+	if self:child(0) then
+		str = str .. string.format(" ; [%d,%d] - [%d,%d]\n", self:range())
+		for node in _LNode.iter_children(self) do
+			node = _LNode:new(node)
+			str = str .. node:tostring(indent + 1)
+		end
+		str = str .. ")"
+	else
+		str = str .. string.format(") ; [%d,%d] - [%d,%d]", self:range())
+	end
+	return str
 end
 
 -- --- Get the node's number of named children.
@@ -145,6 +172,48 @@ function _LNode:range(include_bytes)
 end
 --
 --
+function _LNode:set_range(a, b, x, c, d, y)
+	if type(a) == "userdata" then
+		a, b, x, c, d, y = a:range(true)
+	end
+	if type(a) == "table" then
+		self._range = a._range and a._range or a
+		return
+	end
+	self._range = { a, b, x, c, d, y }
+end
+
+function _LNode:set_start(a, b, x)
+	if type(a) == "userdata" then
+		a, b, x = a:start()
+	end
+	if type(a) == "table" then
+		if a._range then
+			a, b, x = a:start()
+		else
+			a, b, x = a[1], a[2], a[3]
+		end
+	end
+	self._range[1] = a
+	self._range[2] = b
+	self._range[3] = x
+end
+
+function _LNode:set_end(a, b, x)
+	if type(a) == "userdata" then
+		a, b, x = a:end_()
+	end
+	if type(a) == "table" then
+		if a._range then
+			a, b, x = a:end_()
+		else
+			a, b, x = a[4], a[5], a[6]
+		end
+	end
+	self._range[4] = a
+	self._range[5] = b
+	self._range[6] = x
+end
 
 --- Check if {node} refers to the same node within the same tree.
 --- @param node _LNode
@@ -152,8 +221,40 @@ end
 function _LNode:equal(node)
 	return self == node
 end
-function _LNode:new()
-	return setmetatable({}, _LNode)
+
+---@param node_type string|LNode?
+---@return _LNode
+function _LNode:new(node_type, opt)
+	if type(node_type) == "userdata" then
+		local lnode = setmetatable({ _type = node_type:type(), _childrens = {}, _field = {}, _range = {} }, _LNode)
+		lnode:set_range(node_type)
+		for node, field in node_type:iter_children() do
+			lnode._childrens[#lnode._childrens + 1] = node
+			if field then
+				lnode._field[field] = lnode._field[field] or {}
+				table.insert(lnode._field[field], node)
+			end
+		end
+		return lnode
+	end
+	if type(node_type) == "table" then
+		return node_type
+	end
+	return setmetatable({ _type = node_type or "", _childrens = {}, _field = {}, _range = {} }, _LNode)
+end
+
+function _LNode:add_child(child, field, index)
+	-- child = _LNode:new(child)
+	if index then
+		table.insert(self._childrens, index, child)
+	else
+		table.insert(self._childrens, child)
+	end
+	-- child._parent = self
+	if field then
+		self._field[field] = self._field[field] or {}
+		table.insert(self._field[field], child)
+	end
 end
 
 return _LNode

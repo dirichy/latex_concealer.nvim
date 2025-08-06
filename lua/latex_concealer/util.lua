@@ -11,7 +11,7 @@ M.config = {
 	},
 	["if"] = {
 		mmode = false,
-		_handler = true,
+		-- _handler = true,
 	},
 }
 -- function M.clear(node, buffer)

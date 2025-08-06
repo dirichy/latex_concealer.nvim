@@ -41,6 +41,7 @@
         \end{itemize}
     \end{itemize}
 \end{itemize}
+
 \section{Math}
 \subsection{greek alphabet}
 \(\alpha\beta\gamma\delta\epsilon\varepsilon\zeta\eta\theta\vartheta\iota\kappa\lambda\mu\nu\xi\pi\varpi\rho\varrho\sigma\varsigma\tau\upsilon\phi\varphi\chi\psi\omega\Gamma\Delta\Theta\Lambda\Xi\Pi\Sigma\Upsilon\Phi\Psi\Omega\).
@@ -66,10 +67,12 @@
 If the fraction has only numbers, we will conceal it as a constant.
 Else, we will conceal it into three delims. Don't worry about nested fractions, the delims can use rainbow color.
 \(\frac{12345}{67890} \dfrac{-999}{-123} \tfrac{11}{22} \frac{a}{b} \frac{\alpha}{\beta} \frac{\frac{\frac{1}{2}}{\frac{3}{4}}}{\frac{\frac{5}{6}}{\frac{7}{8}}}\).
-
+\(\frac {1}2 \frac {1} 2 \frac 1 2 \frac 12 \frac12\)
+\(\frac1{2}\)
 \subsection{sqrt}
 Same as frac, there are three different methods to conceal sqrt.
-\(\sqrt{2} \sqrt[2]{3} \sqrt[\pi]{\mathrm{e}}\)
+\(\sqrt[3]{2}\)
+\(\sqrt[2]{3}  \sqrt[\pi]{\mathrm{e}}\)
 \subsection{overline}
 \(\overline{a} \overline{b} \overline{c} \overline{abcde}  \overline{\pi} \tilde{a} \tilde{b} \tilde{A} \tilde{abc} \).
 
@@ -91,7 +94,7 @@ We can insert another \footnote{This is another footnote}{footnote} in paragraph
 \subsection{script}
 \subsubsection{not in math mode}
 script will not be concealed when not in mathmode, so you can use \_ in labels and they will not be concealed.
-\verb|a_1|
+{\verb \alpha a \alpha }
 \subsubsection{in math mode}
 We will conceal script into unicode script style.
 \(a_a a_1 a_2 a_{12} a_{aaa} a^1 a^2 a^a \)
@@ -100,7 +103,11 @@ but some character has no script style, so they will not be concealed.
 \(a^\alpha a^\gamma a^{-\alpha} a_\phi a_b\)
 \subsection{Modifier command}
 \subsubsection{not}
-\( \not abcd \not | \not \alpha \not\equiv \)
+\(\not ax b\)
 \subsubsection{accents}
-\'a \"b \`A \^D \~E \.F \`6 \'\alpha \.\beta \not \pi
+\"a \`b
+\begin{equation}
+  a_1
+\end{equation}
+
 \end{document}

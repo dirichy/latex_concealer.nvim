@@ -30,9 +30,9 @@ You can pass your own options to `opts`, here is an example. You can see default
 ```lua
 M.config = {
     ---To handle matched treesitter node
-	handler = {
+	processor_map = {
         ---The key is treesitter node type, value is how to treat this node. 
-		generic_command = require("latex_concealer.handler.generic_command"),
+		generic_command = require("latex_concealer.processor.generic_command"),
         ---For begin, value is function(buffer,node) to do some counter-related things. 
 		begin = {
 			enumerate = function(buffer, node)
