@@ -122,13 +122,12 @@ return {
 				local wordnode
 				if nodee:type() == "word" and i then
 					local a, b, x, c, d, y = nodee:range(true)
-					print(a, b, x, c, d, y)
-					nodee = LNode:new("char")
-					nodee:set_range(a, b + i - 1, x + i - 1, a, b + i, x + i)
 					if x + i < y then
 						wordnode = LNode:new(nodee)
 						wordnode:set_start(a, b + i, x + i)
 					end
+					nodee = LNode:new("char")
+					nodee:set_range(a, b + i - 1, x + i - 1, a, b + i, x + i)
 				end
 				if open == vim.treesitter.get_node_text(nodee, buffer) then
 					arg_node:add_child(nodee, "close")

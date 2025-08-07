@@ -122,13 +122,6 @@ function M.reverse_counter(buffer, counter_name)
 	M.cache[buffer].counters[counter_name] = M.cache[buffer].counters[counter_name] - 1
 end
 
-function M.step_counter_rangal(buffer, counter_name, position)
-	M.step_counter(buffer, counter_name)
-	util.hook(buffer, position, function(buf)
-		M.reverse_counter(buf, counter_name)
-	end)
-end
-
 function M.reset_counter(buffer, counter_name)
 	M.cache[buffer].counters[counter_name] = 0
 end

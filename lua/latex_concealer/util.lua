@@ -108,36 +108,36 @@ function M.setup_buf(buffer)
 	if M.cache[buffer] then
 		return
 	end
-	M.cache[buffer] = { hook = {} }
+	M.cache[buffer] = {}
 	M.cache[buffer]["if"] = vim.deepcopy(M.config["if"])
 end
 
---- add hook to a position
----@param buffer number
----@param position number[]|TSNode
----@param callback function(number)->boolean
----@return boolean
-function M.hook(buffer, position, callback)
-	local pos
-	if position.range then
-		local _, _, c, d = position:range()
-		pos = { c, d }
-	else
-		pos = position
-	end
-	local flag
-	for index, value in ipairs(M.cache[buffer].hook) do
-		if pos[1] > value.pos[1] or pos[1] == value.pos[1] and pos[2] > value.pos[2] then
-			table.insert(M.cache[buffer].hook, index, { pos = pos, callback = callback })
-			flag = true
-			break
-		end
-	end
-	if not flag then
-		table.insert(M.cache[buffer].hook, { pos = pos, callback = callback })
-	end
-	return true
-end
+-- --- add hook to a position
+-- ---@param buffer number
+-- ---@param position number[]|TSNode
+-- ---@param callback function(number)->boolean
+-- ---@return boolean
+-- function M.hook(buffer, position, callback)
+-- 	local pos
+-- 	if position.range then
+-- 		local _, _, c, d = position:range()
+-- 		pos = { c, d }
+-- 	else
+-- 		pos = position
+-- 	end
+-- 	local flag
+-- 	for index, value in ipairs(M.cache[buffer].hook) do
+-- 		if pos[1] > value.pos[1] or pos[1] == value.pos[1] and pos[2] > value.pos[2] then
+-- 			table.insert(M.cache[buffer].hook, index, { pos = pos, callback = callback })
+-- 			flag = true
+-- 			break
+-- 		end
+-- 	end
+-- 	if not flag then
+-- 		table.insert(M.cache[buffer].hook, { pos = pos, callback = callback })
+-- 	end
+-- 	return true
+-- end
 
 --- set a if variable for a buffer
 ---@param buffer number
@@ -155,21 +155,21 @@ function M.get_if(buffer, name)
 	return M.cache[buffer]["if"][name]
 end
 
---- toggle if before a position
----@param buffer number
----@param name string
----@param position number[]|TSNode
-function M.toggle_if_rangal(buffer, name, position)
-	M.cache[buffer]["if"][name] = not M.cache[buffer]["if"][name]
-	M.hook(buffer, position, function(buf)
-		M.cache[buf]["if"][name] = not M.cache[buf]["if"][name]
-	end)
-end
+-- --- toggle if before a position
+-- ---@param buffer number
+-- ---@param name string
+-- ---@param position number[]|TSNode
+-- function M.toggle_if_rangal(buffer, name, position)
+-- 	M.cache[buffer]["if"][name] = not M.cache[buffer]["if"][name]
+-- 	M.hook(buffer, position, function(buf)
+-- 		M.cache[buf]["if"][name] = not M.cache[buf]["if"][name]
+-- 	end)
+-- end
 
 ---reinit cache for a buffer
 ---@param buffer number
 function M.reset_all(buffer)
-	M.cache[buffer] = { hook = {} }
+	-- M.cache[buffer] = { hook = {} }
 	M.cache[buffer]["if"] = vim.deepcopy(M.config["if"])
 end
 

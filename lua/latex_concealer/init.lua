@@ -1,4 +1,4 @@
-local concealer = require("latex_concealer.processor.util").conceal
+local concealer = require("latex_concealer.processor.util")
 local filters = require("latex_concealer.filters")
 local extmark = require("latex_concealer.extmark")
 local util = require("latex_concealer.util")
@@ -51,14 +51,10 @@ M.config = {
 			end,
 		},
 		subscript = {
-			after = function(buffer, node)
-				concealer.script(buffer, node, filters.subscript, highlight.script)
-			end,
+			after = concealer.script(filters.subscript, highlight.script),
 		},
 		superscript = {
-			after = function(buffer, node)
-				concealer.script(buffer, node, filters.superscript, highlight.script)
-			end,
+			after = concealer.script(filters.superscript, highlight.script),
 		},
 		generic_command = function(buffer, node)
 			local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
@@ -132,11 +128,13 @@ M.config = {
 		},
 		-- inline_formula = mmode_handler,
 		["\\("] = {
+			before = concealer.conceal("$", highlight.constant),
 			after = function(buffer, node)
 				util.set_if(buffer, "mmode", true)
 			end,
 		},
 		["\\)"] = {
+			before = concealer.conceal("$", highlight.constant),
 			after = function(buffer, node)
 				util.set_if(buffer, "mmode", false)
 			end,
@@ -205,11 +203,11 @@ function M.conceal(buffer, root)
 	-- root = parser.parse_node_childrens(buffer, root)
 	-- for node in root:iter_children() do
 	for node, field in parser.iter_children(buffer, root) do
-		local c, d = node:end_()
-		local hook = util.cache[buffer].hook
-		while #hook > 0 and (c > hook[#hook].pos[1] or c == hook[#hook].pos[1] and d > hook[#hook].pos[2]) do
-			table.remove(hook).callback(buffer)
-		end
+		-- local c, d = node:end_()
+		-- local hook = util.cache[buffer].hook
+		-- while #hook > 0 and (c > hook[#hook].pos[1] or c == hook[#hook].pos[1] and d > hook[#hook].pos[2]) do
+		-- 	table.remove(hook).callback(buffer)
+		-- end
 		local node_type = node:type()
 		---@type function|table|false
 		local processor = M.config.processor[node_type]

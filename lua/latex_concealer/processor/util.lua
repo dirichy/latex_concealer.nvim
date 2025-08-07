@@ -3,7 +3,7 @@ local extmark = require("latex_concealer.extmark")
 local util = require("latex_concealer.util")
 local highlight = extmark.config.highlight
 local counter = require("latex_concealer.counter")
-M.conceal = {
+local concealers = {
 	font = function(buffer, node, filter, hilight, opts)
 		opts = opts or {}
 		local arg_nodes = node:field("arg")
@@ -178,7 +178,7 @@ M.delim = function(...)
 		before = function(buffer, node)
 			counter.step_counter(buffer, "_bracket")
 			for k, v in ipairs(args) do
-				M.conceal.delim[k](buffer, node, v, include_optional)
+				concealers.delim[k](buffer, node, v, include_optional)
 			end
 		end,
 		after = function(buffer, node)
@@ -190,7 +190,14 @@ end
 M.font = function(filter, hl)
 	hl = hl or highlight.default
 	return function(buffer, node)
-		return M.conceal.font(buffer, node, filter, hl)
+		return concealers.font(buffer, node, filter, hl)
+	end
+end
+
+M.conceal = function(text, hl)
+	hl = hl or highlight.default
+	return function(buffer, node)
+		return extmark.multichar_conceal(buffer, { node = node }, { text, hl })
 	end
 end
 
@@ -207,6 +214,13 @@ local function get_hl_group(buffer, x, y)
 	ins = ins.treesitter[#ins.treesitter]
 	return ins and ins.hl_group_link or "Normal"
 end
+
+M.script = function(filter, hl)
+	return function(buffer, node)
+		return concealers.script(buffer, node, filter, hl)
+	end
+end
+
 M.modify_next_char = function(modifier, hl, force_hl)
 	if type(modifier) == "string" then
 		local s = modifier
