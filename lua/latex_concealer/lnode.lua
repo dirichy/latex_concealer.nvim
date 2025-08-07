@@ -1,7 +1,5 @@
 ---@alias LNode _LNode|TSNode
 ---@class _LNode
--- -@field _parent _LNode?
--- -@field _index number?
 ---@field _range Range6
 ---@field _field table <string,LNode[]>
 ---@field _childrens LNode[]
@@ -85,6 +83,7 @@ function _LNode:child(index)
 	end
 end
 
+--Used to debug
 function _LNode:tostring(indent)
 	indent = indent or 0
 	local str = "(" .. self:type()

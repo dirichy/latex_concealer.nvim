@@ -36,13 +36,13 @@ M.config = {
 	processor_map = {
         ---command_name can add some simple symbols
 		command_name = {
-          ["\\my_custom_command"]={"my_custom_symbol","my_custom_hl_group"}
+          ["my_custom_command"]={"my_custom_symbol","my_custom_hl_group"}
         },
         generic_command = {
-          ["\\my_custom_delim"]=concealer.delim("open","close"),
+          ["my_custom_delim"]=concealer.delim("open","close"),
           -- filter is a table or function used in string.gsub
-          ["\\my_custom_font_command"]=concealer.font({filter,hl}),
-          ["\\my_custom_command_with_arg"]={
+          ["my_custom_font_command"]=concealer.font({filter,hl}),
+          ["my_custom_command_with_arg"]={
             oarg=true,
             narg=3,
             before=function(buffer,node)

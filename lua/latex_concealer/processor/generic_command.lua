@@ -87,7 +87,7 @@ local function tilde(buffer, node, opts)
 end
 ---@type table<string,function|LaTeX.Processor>
 return {
-	["\\verb"] = {
+	["verb"] = {
 		parser = function(buffer, node, field)
 			local lnode = LNode:new("generic_command")
 			lnode:add_child(node:field("command")[1], "command")
@@ -145,24 +145,24 @@ return {
 			end
 		end,
 	},
-	["\\not"] = concealer.modify_next_char("̸", highlight.relationship, false),
-	["\\'"] = concealer.modify_next_char("́", highlight.default, false),
-	['\\"'] = concealer.modify_next_char("̈", highlight.default, false),
-	["\\`"] = concealer.modify_next_char("̀", highlight.default, false),
-	["\\="] = concealer.modify_next_char("̄", highlight.default, false),
-	["\\~"] = concealer.modify_next_char("̃", highlight.default, false),
-	["\\."] = concealer.modify_next_char("̇", highlight.default, false),
-	["\\^"] = concealer.modify_next_char("̂", highlight.default, false),
+	["not"] = concealer.modify_next_char("̸", highlight.relationship, false),
+	["'"] = concealer.modify_next_char("́", highlight.default, false),
+	['"'] = concealer.modify_next_char("̈", highlight.default, false),
+	["`"] = concealer.modify_next_char("̀", highlight.default, false),
+	["="] = concealer.modify_next_char("̄", highlight.default, false),
+	["~"] = concealer.modify_next_char("̃", highlight.default, false),
+	["."] = concealer.modify_next_char("̇", highlight.default, false),
+	["^"] = concealer.modify_next_char("̂", highlight.default, false),
 	--command_delim
-	["\\frac"] = { init = frac, narg = 2 },
-	["\\dfrac"] = { init = frac, narg = 2 },
-	["\\tfrac"] = { init = frac, narg = 2 },
-	["\\bar"] = overline,
-	["\\overline"] = overline,
-	["\\tilde"] = tilde,
-	["\\norm"] = concealer.delim("‖", "‖"),
-	["\\abs"] = concealer.delim("|", "|"),
-	["\\sqrt"] = {
+	["frac"] = { init = frac, narg = 2 },
+	["dfrac"] = { init = frac, narg = 2 },
+	["tfrac"] = { init = frac, narg = 2 },
+	["bar"] = overline,
+	["overline"] = overline,
+	["tilde"] = tilde,
+	["norm"] = concealer.delim("‖", "‖"),
+	["abs"] = concealer.delim("|", "|"),
+	["sqrt"] = {
 		oarg = true,
 		narg = 2,
 		init = function(buffer, node)
@@ -180,20 +180,20 @@ return {
 		end,
 	},
 	--fonts
-	["\\mathbb"] = concealer.font(filters.mathbb, highlight.symbol),
-	["\\mathcal"] = concealer.font(filters.mathcal, highlight.symbol),
-	["\\mathbbm"] = concealer.font(filters.mathbbm, highlight.symbol),
-	["\\mathfrak"] = concealer.font(filters.mathfrak, highlight.symbol),
-	["\\mathscr"] = concealer.font(filters.mathscr, highlight.symbol),
-	["\\mathsf"] = concealer.font(filters.mathsf, highlight.symbol),
-	["\\operatorname"] = concealer.font(function(str)
+	["mathbb"] = concealer.font(filters.mathbb, highlight.symbol),
+	["mathcal"] = concealer.font(filters.mathcal, highlight.symbol),
+	["mathbbm"] = concealer.font(filters.mathbbm, highlight.symbol),
+	["mathfrak"] = concealer.font(filters.mathfrak, highlight.symbol),
+	["mathscr"] = concealer.font(filters.mathscr, highlight.symbol),
+	["mathsf"] = concealer.font(filters.mathsf, highlight.symbol),
+	["operatorname"] = concealer.font(function(str)
 		return str
 	end, highlight.operatorname),
-	["\\mathrm"] = concealer.font(function(str)
+	["mathrm"] = concealer.font(function(str)
 		return str
 	end, highlight.constant),
 	--other
-	["\\footnote"] = function(buffer, node)
+	["footnote"] = function(buffer, node)
 		counter.step_counter(buffer, "footnote")
 		local arg_nodes = node:field("arg")
 		if #arg_nodes < 2 then

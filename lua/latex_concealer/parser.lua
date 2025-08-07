@@ -149,7 +149,7 @@ function M.iter_children(buffer, pnode)
 			end
 			if node_type == "generic_command" then
 				local command_namd = node:field("command")[1]
-				command_namd = vim.treesitter.get_node_text(command_namd, buffer)
+				command_namd = vim.treesitter.get_node_text(command_namd, buffer):sub(2, -1)
 				local processor = handler[node_type][command_namd]
 				if type(processor) == "table" then
 					local parser = processor.parser and processor.parser(buffer, node)

@@ -57,7 +57,7 @@ M.config = {
 			after = concealer.script(filters.superscript, highlight.script),
 		},
 		generic_command = function(buffer, node)
-			local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer)
+			local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer):sub(2, -1)
 			local processor = M.config.processor_map.generic_command[command_name]
 			if not processor then
 				return
@@ -66,7 +66,7 @@ M.config = {
 		end,
 		command_name = {
 			after = function(buffer, node)
-				local command_name = vim.treesitter.get_node_text(node, buffer)
+				local command_name = vim.treesitter.get_node_text(node, buffer):sub(2, -1)
 				local expanded = M.config.processor_map.command_name[command_name]
 				if not expanded then
 					return
