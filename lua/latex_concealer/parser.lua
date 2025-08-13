@@ -1,6 +1,7 @@
 ---@alias LaTeX.Parser fun(node:LNode?,field:string?):LNode|LNode[]|nil
 local LNode = require("latex_concealer.lnode")
-local handler = require("latex_concealer.processor")
+-- local handler = require("latex_concealer.processor")
+-- local utf8 = require("lua-utf8")
 local M = {}
 
 ---@param text_lnode LNode
@@ -120,9 +121,10 @@ function M.parse_args(command_node, field, optional, number)
 	end
 end
 
-function M.iter_children(buffer, pnode)
+function M.iter_children(buffer, pnode, parsers)
 	local parser_stack = {}
 	local node_stack = {}
+	local temp_node = {}
 	local iter = pnode:iter_children()
 	---@return LNode?,string
 	local next_node = function()
@@ -147,19 +149,20 @@ function M.iter_children(buffer, pnode)
 				end
 				node_type = node:type()
 			end
-			if node_type == "generic_command" then
-				local command_namd = node:field("command")[1]
-				command_namd = vim.treesitter.get_node_text(command_namd, buffer):sub(2, -1)
-				local processor = handler[node_type][command_namd]
-				if type(processor) == "table" then
-					local parser = processor.parser and processor.parser(buffer, node)
-					if processor.oarg or processor.narg then
-						parser = M.parse_args(node, field, processor.oarg, processor.narg)
-					end
-					if parser then
-						table.insert(parser_stack, parser)
-						node = nil
-					end
+			local pss = parsers[node_type]
+			while type(pss) == "function" do
+				pss = pss(buffer, node, { last_node = temp_node })
+			end
+			if type(pss) == "table" and (pss.oarg or pss.narg) then
+				pss = M.parse_args(node, field, pss.oarg, pss.narg)
+			end
+			if pss then
+				if type(pss) == "function" then
+					table.insert(parser_stack, pss)
+					node = nil
+				end
+				if pss == true then
+					node = nil
 				end
 			end
 			local last_stacked_parser = parser_stack[#parser_stack]
@@ -182,9 +185,20 @@ function M.iter_children(buffer, pnode)
 				end
 			end
 			if node then
-				return node, field
+				if temp_node[1] then
+					local nnn, fff = unpack(temp_node)
+					temp_node = { node, field }
+					return nnn, fff
+				else
+					temp_node = { node, field }
+				end
 			end
 			node, field = next_node()
+		end
+		if temp_node[1] then
+			local nnn, fff = unpack(temp_node)
+			temp_node = {}
+			return nnn, fff
 		end
 	end
 end
@@ -192,10 +206,10 @@ end
 ---@param buffer integer
 ---@param pnode LNode
 ---@return LNode
-function M.parse_node_childrens(buffer, pnode)
+function M.parse_node_childrens(buffer, pnode, parsers)
 	local lnode = LNode:new(pnode:type())
 	lnode:set_range(pnode)
-	for node, field in M.iter_children(buffer, pnode) do
+	for node, field in M.iter_children(buffer, pnode, parsers) do
 		lnode:add_child(node, field)
 	end
 	return lnode

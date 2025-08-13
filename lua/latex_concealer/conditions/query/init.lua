@@ -1,5 +1,5 @@
 local M = {}
-local util = require("latex_snip.conditions.util")
+local util = require("latex_concealer.conditions.util")
 ---@param Node TSNode
 ---@param source number|string #the source of TSTree
 ---@param check_parent? boolean

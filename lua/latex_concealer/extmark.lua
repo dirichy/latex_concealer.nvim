@@ -32,7 +32,7 @@ M.config = {
 		footnotemark = "Special",
 		error = "ErrorMsg",
 		script = "Identifier",
-		default = "Conceal",
+		default = {},
 	},
 	ns_id = vim.api.nvim_create_namespace("latex_concealer"),
 	extmark = {

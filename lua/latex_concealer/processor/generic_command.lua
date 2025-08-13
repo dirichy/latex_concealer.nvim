@@ -1,94 +1,114 @@
----@class LaTeX.Processor
----@field init (fun(buffer:integer,node:LNode):LaTeX.Processor?)?
----@field parser (fun(buffer:integer,node:LNode,field:string):LaTeX.Parser?)? You can make your own parser here for some node like `\verb'.
----@field oarg boolean? I have made a parser for optional arg and arg whih no curly brackets, set oarg to true will try to parser an optional arg with `[]`
----@field narg integer? set `narg` to a number to define the number of args, optional includes. If `narg` is nil, the parser will only try to find args with curly brackets.
----@field before ( fun(buffer:integer,node:LNode):LaTeX.Processor|function|nil )? will be called before all children of `node` are processed
----@field after (fun(buffer:integer,node:LNode):LaTeX.Processor|function|nil)? will be called after all children of `node` are processed
-
 local extmark = require("latex_concealer.extmark")
 local LNode = require("latex_concealer.lnode")
+local utf8 = require("latex_concealer.utf8")
 local util = require("latex_concealer.util")
 local highlight = extmark.config.highlight
 local counter = require("latex_concealer.counter")
 local concealer = require("latex_concealer.processor.util")
 local filters = require("latex_concealer.filters")
-local subscript_tbl = {
-	["-"] = "₋",
-	["0"] = "₀",
-	["1"] = "₁",
-	["2"] = "₂",
-	["3"] = "₃",
-	["4"] = "₄",
-	["5"] = "₅",
-	["6"] = "₆",
-	["7"] = "₇",
-	["8"] = "₈",
-	["9"] = "₉",
-}
-local superscript_tbl = {
-	["-"] = "⁻",
-	["0"] = "⁰",
-	["1"] = "¹",
-	["2"] = "²",
-	["3"] = "³",
-	["4"] = "⁴",
-	["5"] = "⁵",
-	["6"] = "⁶",
-	["7"] = "⁷",
-	["8"] = "⁸",
-	["9"] = "⁹",
-}
+local Grid = require("latex_concealer.grid")
+local subscript_tbl = require("latex_concealer.filters.script").subscript
+local superscript_tbl = require("latex_concealer.filters.script").superscript
 local function frac(buffer, node)
+	local pss
 	local arg_nodes = node:field("arg")
 	if #arg_nodes ~= 2 then
 		return
 	end
-	local up = vim.treesitter.get_node_text(arg_nodes[1], buffer)
-	if #up > 1 then
-		up = up:sub(2, -2)
-	end
-	local down = vim.treesitter.get_node_text(arg_nodes[2], buffer)
-	if #down > 1 then
-		down = down:sub(2, -2)
-	end
-	if string.match(up .. down, "^[-]?[0-9-]*$") then
-		up = up:gsub(".", superscript_tbl)
-		down = down:gsub(".", subscript_tbl)
-		extmark.multichar_conceal(buffer, { node = node }, { up .. "/" .. down, highlight.fraction })
-		return
-	end
-	return concealer.delim({ "(", highlight.delim }, { ")/(", highlight.delim }, { ")", highlight.delim })
-end
-local function overline(buffer, node, opts)
-	if not node:field("arg") or not node:field("arg")[1] then
-		return
-	end
-	local text = vim.treesitter.get_node_text(node:field("arg")[1], buffer):sub(2, -2)
-	if string.match(text, "^[a-zA-Z]$") then
-		extmark.multichar_conceal(buffer, { node = node }, { text .. "̅", "MathZone" })
-		return
+	local up = LNode.remove_bracket(arg_nodes[1])
+	local down = LNode.remove_bracket(arg_nodes[2])
+	up = concealer.node2grid(buffer, up)
+	down = concealer.node2grid(buffer, down)
+	local super = filters.all_match(up, superscript_tbl)
+	local sub = filters.all_match(down, subscript_tbl)
+	if super and sub and super.height == 1 and sub.height == 1 then
+		pss = {
+			after = function()
+				extmark.multichar_conceal(
+					buffer,
+					{ node = node },
+					{ super.data[1][1][1] .. "/" .. sub.data[1][1][1], highlight.fraction }
+				)
+			end,
+			grid = function(buf, n)
+				return super + Grid:new({ { { "/", highlight.fraction } } }) + sub
+			end,
+		}
 	else
-		return concealer.delim({ "‾", highlight.delim }, { "‾", highlight.delim })
+		pss = concealer.delim({ "(", highlight.delim }, { ")/(", highlight.delim }, { ")", highlight.delim })
+		pss.grid = function(buf, lnode)
+			local arg = lnode:field("arg")
+			if #arg < 2 then
+				return concealer.default_grid_processor(buffer, lnode)
+			end
+			local arg1 = concealer.node2grid(buffer, LNode:new(arg[1]):remove_bracket())
+			local arg2 = concealer.node2grid(buffer, LNode:new(arg[2]):remove_bracket())
+			local w =
+				math.max(arg1.width + (arg1.type == "frac" and 2 or 0), arg2.width + (arg2.type == "frac" and 2 or 0))
+			local line = Grid:new({ string.rep("─", w), {} })
+			local grid = arg1 - (line - arg2)
+			grid.type = "frac"
+			return grid
+		end
 	end
+	return pss
+end
+---@param buffer integer
+---@param node LNode
+---@param opts table
+local function overline(buffer, node, opts)
+	local arg = LNode:new(node:field("arg")[1])
+	if not arg then
+		return
+	end
+	arg = concealer.node2grid(buffer, arg:remove_bracket())
+	if arg.height == 1 and arg.width == 1 then
+		return concealer.modify_next_char("̅", {})
+	end
+	local pss = concealer.delim({ "‾", highlight.delim }, { "‾", highlight.delim })
+	pss.grid = function(buf, lnode)
+		return Grid:new({ string.rep("_", arg.width), arg.data[1][1][2] }) - arg
+	end
+	return pss
 end
 
 local function tilde(buffer, node, opts)
-	if not node:field("arg") or not node:field("arg")[1] then
+	local arg = LNode:new(node:field("arg")[1])
+	if not arg then
 		return
 	end
-	local text = vim.treesitter.get_node_text(node:field("arg")[1], buffer):sub(2, -2)
-	if string.match(text, "^[a-zA-Z]$") then
-		extmark.multichar_conceal(buffer, { node = node }, { text .. "̃", "MathZone" })
-		return
+	arg = concealer.node2grid(buffer, arg:remove_bracket())
+	if arg.height == 1 and arg.width == 1 then
+		return concealer.modify_next_char("̃", "MathZone")
+	end
+	local pss = concealer.delim({ "˜", highlight.delim }, { "˜", highlight.delim })
+	if arg.width == 2 then
+		pss.grid = function(buf, lnode)
+			return Grid:new({ "⏜𛰜", arg.data[1][1][2] }) - arg
+			--𛰐--𛰛𛰜⏜⏝𛰩𛰪
+		end
+	elseif arg.width == 1 then
+		pss.grid = function(buf, lnode)
+			return Grid:new({ "˜", arg.data[1][1][2] }) - arg
+		end
 	else
-		return concealer.delim({ "˜", highlight.delim }, { "˜", highlight.delim })
+		pss.grid = function(buf, lnode)
+			local line = arg.width - 3
+			local over = math.ceil(line / 2)
+			local under = line - over
+			return Grid:new({
+				"/" .. string.rep("‾", over) .. "\\" .. string.rep("_", under) .. "/",
+				arg.data[1][1][2],
+			}) - arg
+		end
 	end
+	return pss
 end
 ---@type table<string,function|LaTeX.Processor>
 return {
 	["verb"] = {
-		parser = function(buffer, node, field)
+		parser = function(buffer, node, opts)
+			local field = opts.field
 			local lnode = LNode:new("generic_command")
 			lnode:add_child(node:field("command")[1], "command")
 			lnode:set_range(node)
@@ -154,9 +174,9 @@ return {
 	["."] = concealer.modify_next_char("̇", highlight.default, false),
 	["^"] = concealer.modify_next_char("̂", highlight.default, false),
 	--command_delim
-	["frac"] = { init = frac, narg = 2 },
-	["dfrac"] = { init = frac, narg = 2 },
-	["tfrac"] = { init = frac, narg = 2 },
+	["frac"] = { processor = frac, narg = 2 },
+	["dfrac"] = { processor = frac, narg = 2 },
+	["tfrac"] = { processor = frac, narg = 2 },
 	["bar"] = overline,
 	["overline"] = overline,
 	["tilde"] = tilde,
@@ -165,7 +185,7 @@ return {
 	["sqrt"] = {
 		oarg = true,
 		narg = 2,
-		init = function(buffer, node)
+		processor = function(buffer, node)
 			local optional_arg = node:field("optional_arg")[1]
 			if optional_arg then
 				local up_number = vim.treesitter.get_node_text(optional_arg, buffer):sub(2, -2)
@@ -177,6 +197,67 @@ return {
 			else
 				return concealer.delim({ "√(", highlight.delim }, { ")", highlight.delim })
 			end
+		end,
+		--   ___________
+		--  ⎛
+		--  ⎜
+		--  ⎜
+		--  ⎜
+		--  ⎜
+		-- √
+		grid = function(buffer, node)
+			local oarg = node:field("optional_arg")[1]
+			local arg = node:field("arg")[1]
+			arg = concealer.node2grid(buffer, LNode.remove_bracket(arg))
+			local hi = arg.data[1][1][2]
+			if arg.height == 1 then
+				if arg.width == 1 then
+					arg.data[1][1] = { "√" .. arg.data[1][1][1] .. "̅", arg.data[1][1][2] }
+					arg.width = arg.width + 1
+				else
+					arg = Grid:new({ string.rep("_", arg.width), hi }) - arg
+					arg = Grid:new({ "√", hi }) + arg
+				end
+			else
+				arg = Grid:new({ string.rep("_", arg.width), hi }) - arg
+				arg.center = math.ceil(arg.height / 2) + 1
+				local data = { { { "  ", hi } }, { { " ⎛", hi } } }
+				for _ = 3, arg.height - 1 do
+					table.insert(data, { { " ⎜", hi } })
+				end
+				table.insert(data, { { "√ ", hi } })
+				local sqrt = Grid:new(data)
+				sqrt.center = arg.center
+				arg = sqrt + arg
+			end
+			if oarg then
+				oarg = concealer.node2grid(buffer, LNode.remove_bracket(oarg))
+				if oarg.height == 1 and arg.height == 1 then
+					local ss = Grid:new(oarg)
+					local flag = true
+					for index, value in ipairs(oarg.data[1]) do
+						local s = string.gsub(value[1], ".", function(str)
+							if filters.superscript[str] then
+								return filters.superscript[str]
+							else
+								flag = false
+								return str
+							end
+						end)
+						if not flag then
+							break
+						end
+						ss.data[1][index][1] = s
+					end
+					if flag then
+						arg = ss + arg
+						return arg
+					end
+				end
+				oarg.center = arg.center + 1
+				arg = oarg + arg
+			end
+			return arg
 		end,
 	},
 	--fonts

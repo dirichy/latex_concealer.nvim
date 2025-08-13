@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.10.29)  5 AUG 2025 15:41
+This is XeTeX, Version 3.141592653-2.6-0.999996 (TeX Live 2024) (preloaded format=xelatex 2024.10.29)  7 AUG 2025 18:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -623,32 +623,249 @@ LaTeX Font Info:    Font shape `TS1/mdbch/m/n' will be
 (Font)              scaled to size 10.11786pt on input line 30.
 LaTeX Font Info:    Font shape `T1/mdbch/m/n' will be
 (Font)              scaled to size 13.15324pt on input line 35.
+LaTeX Font Info:    Trying to load font information for OT1+mdbch on input line
+ 47.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/mathdesign/mdbch/ot1mdbch.fd
+File: ot1mdbch.fd 2013/08/29 Fontinst v1.933 font definitions for OT1/mdbch.
+)
+LaTeX Font Info:    Font shape `OT1/mdbch/m/n' will be
+(Font)              scaled to size 10.11786pt on input line 47.
+LaTeX Font Info:    Font shape `OT1/mdbch/m/n' will be
+(Font)              scaled to size 6.72005pt on input line 47.
+LaTeX Font Info:    Font shape `OT1/mdbch/m/n' will be
+(Font)              scaled to size 4.80003pt on input line 47.
+LaTeX Font Info:    Trying to load font information for OML+mdbch on input line
+ 47.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/mathdesign/mdbch/omlmdbch.fd
+File: omlmdbch.fd 2013/08/29 Fontinst v1.933 font definitions for OML/mdbch.
+)
+LaTeX Font Info:    Font shape `OML/mdbch/m/it' will be
+(Font)              scaled to size 10.11786pt on input line 47.
+LaTeX Font Info:    Font shape `OML/mdbch/m/it' will be
+(Font)              scaled to size 6.72005pt on input line 47.
+LaTeX Font Info:    Font shape `OML/mdbch/m/it' will be
+(Font)              scaled to size 4.80003pt on input line 47.
+LaTeX Font Info:    Trying to load font information for OMS+mdbch on input line
+ 47.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/mathdesign/mdbch/omsmdbch.fd
+File: omsmdbch.fd 2013/08/29 Fontinst v1.933 font definitions for OMS/mdbch.
+)
+LaTeX Font Info:    Font shape `OMS/mdbch/m/n' will be
+(Font)              scaled to size 10.11786pt on input line 47.
+LaTeX Font Info:    Font shape `OMS/mdbch/m/n' will be
+(Font)              scaled to size 6.72005pt on input line 47.
+LaTeX Font Info:    Font shape `OMS/mdbch/m/n' will be
+(Font)              scaled to size 4.80003pt on input line 47.
+LaTeX Font Info:    Trying to load font information for OMX+mdbch on input line
+ 47.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/mathdesign/mdbch/omxmdbch.fd
+File: omxmdbch.fd 2013/08/29 Fontinst v1.933 font definitions for OMX/mdbch.
+)
+LaTeX Font Info:    Font shape `OMX/mdbch/m/n' will be
+(Font)              scaled to size 10.11786pt on input line 47.
+LaTeX Font Info:    Font shape `OMX/mdbch/m/n' will be
+(Font)              scaled to size 6.72005pt on input line 47.
+LaTeX Font Info:    Font shape `OMX/mdbch/m/n' will be
+(Font)              scaled to size 4.80003pt on input line 47.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 47.
 
 
-! LaTeX Error: Too deeply nested.
+(/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 47.
 
-See the LaTeX manual or LaTeX Companion for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.37                 \begin{itemize}
-                                    
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Trying to load font information for U+esint on input line 4
+7.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/esint/uesint.fd
+File: uesint.fd 
+)
+LaTeX Font Info:    Font shape `OML/mdbch/m/n' will be
+(Font)              scaled to size 10.11786pt on input line 47.
+LaTeX Font Info:    Font shape `OML/mdbch/m/n' will be
+(Font)              scaled to size 6.72005pt on input line 47.
+LaTeX Font Info:    Font shape `OML/mdbch/m/n' will be
+(Font)              scaled to size 4.80003pt on input line 47.
+LaTeX Font Info:    Trying to load font information for MDA+mdbch on input line
+ 47.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/mathdesign/mdbch/mdamdbch.fd
+File: mdamdbch.fd 2013/08/29 Fontinst v1.933 font definitions for MDA/mdbch.
+)
+LaTeX Font Info:    Font shape `MDA/mdbch/m/n' will be
+(Font)              scaled to size 10.11786pt on input line 47.
+LaTeX Font Info:    Font shape `MDA/mdbch/m/n' will be
+(Font)              scaled to size 6.72005pt on input line 47.
+LaTeX Font Info:    Font shape `MDA/mdbch/m/n' will be
+(Font)              scaled to size 4.80003pt on input line 47.
+LaTeX Font Info:    Trying to load font information for MDB+mdbch on input line
+ 47.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/mathdesign/mdbch/mdbmdbch.fd
+File: mdbmdbch.fd 2013/08/29 Fontinst v1.933 font definitions for MDB/mdbch.
+)
+LaTeX Font Info:    Font shape `MDB/mdbch/m/n' will be
+(Font)              scaled to size 10.11786pt on input line 47.
+LaTeX Font Info:    Font shape `MDB/mdbch/m/n' will be
+(Font)              scaled to size 6.72005pt on input line 47.
+LaTeX Font Info:    Font shape `MDB/mdbch/m/n' will be
+(Font)              scaled to size 4.80003pt on input line 47.
+
+[1
+
+
+]
+LaTeX Font Info:    Font shape `T1/mdbch/m/n' will be
+(Font)              scaled to size 6.72005pt on input line 65.
+LaTeX Font Info:    Font shape `T1/mdbch/m/n' will be
+(Font)              scaled to size 4.80003pt on input line 65.
+LaTeX Font Info:    Font shape `T1/mdbch/m/sl' will be
+(Font)              scaled to size 10.11786pt on input line 80.
+LaTeX Font Info:    Font shape `TU/STSong(0)/m/sl' in size <10.53937> not avail
+able
+(Font)              Font shape `TU/STSong(0)/m/it' tried instead on input line 
+80.
+ [2]
+Missing character: There is no 2 ("32) in font mdbchrma!
+Missing character: There is no 3 ("33) in font mdbchrma!
+Missing character: There is no 4 ("34) in font mdbchrma!
+Missing character: There is no 5 ("35) in font mdbchrma!
+Missing character: There is no 6 ("36) in font mdbchrma!
+Missing character: There is no 7 ("37) in font mdbchrma!
+Missing character: There is no 8 ("38) in font mdbchrma!
+Missing character: There is no 9 ("39) in font mdbchrma!
+Missing character: There is no 0 ("30) in font mdbchrma!
+LaTeX Font Info:    Trying to load font information for U+bbm on input line 82.
+
+(/usr/local/texlive/2024/texmf-dist/tex/latex/bbm-macros/ubbm.fd
+File: ubbm.fd 1999/03/15 V 1.2 Font definition for bbm font - TH
+)
+
+LaTeX Font Warning: Font shape `U/bbm/m/n' in size <10.53937> not available
+(Font)              size <10.95> substituted on input line 82.
+
+Missing character: There is no 3 ("33) in font bbm10!
+Missing character: There is no 4 ("34) in font bbm10!
+Missing character: There is no 5 ("35) in font bbm10!
+Missing character: There is no 6 ("36) in font bbm10!
+Missing character: There is no 7 ("37) in font bbm10!
+Missing character: There is no 8 ("38) in font bbm10!
+Missing character: There is no 9 ("39) in font bbm10!
+Missing character: There is no 0 ("30) in font bbm10!
+LaTeX Font Info:    Font shape `U/xmdeuf/m/n' will be
+(Font)              scaled to size 10.19151pt on input line 85.
+LaTeX Font Info:    Font shape `U/xmdeuf/m/n' will be
+(Font)              scaled to size 6.76897pt on input line 85.
+LaTeX Font Info:    Font shape `U/xmdeuf/m/n' will be
+(Font)              scaled to size 4.83498pt on input line 85.
+
+Overfull \hbox (124.91086pt too wide) in paragraph at lines 81--86
+[]$[]$\T1/mdbch/m/n/10.53937 . $[]$.
+ []
+
+
+Overfull \hbox (186.21037pt too wide) in paragraph at lines 81--86
+[]$\T1/mdbch/m/n/10.53937 . $[]$.
+ []
+
+LaTeX Font Info:    Font shape `T1/mdbch/m/n' will be
+(Font)              scaled to size 7.22704pt on input line 89.
+LaTeX Font Info:    Font shape `OT1/mdbch/m/n' will be
+(Font)              scaled to size 7.22704pt on input line 89.
+LaTeX Font Info:    Font shape `OML/mdbch/m/it' will be
+(Font)              scaled to size 7.22704pt on input line 89.
+LaTeX Font Info:    Font shape `OMS/mdbch/m/n' will be
+(Font)              scaled to size 7.22704pt on input line 89.
+LaTeX Font Info:    Font shape `OMX/mdbch/m/n' will be
+(Font)              scaled to size 7.22704pt on input line 89.
+LaTeX Font Info:    Font shape `U/xmdeuf/m/n' will be
+(Font)              scaled to size 7.27965pt on input line 89.
+
+LaTeX Font Warning: Font shape `U/bbm/m/n' in size <7.52812> not available
+(Font)              size <8> substituted on input line 89.
+
+LaTeX Font Info:    Font shape `OML/mdbch/m/n' will be
+(Font)              scaled to size 7.22704pt on input line 89.
+LaTeX Font Info:    Font shape `MDA/mdbch/m/n' will be
+(Font)              scaled to size 7.22704pt on input line 89.
+LaTeX Font Info:    Font shape `MDB/mdbch/m/n' will be
+(Font)              scaled to size 7.22704pt on input line 89.
+Missing character: There is no ̷ ("337) in font mdbchr8t!
+Missing character: There is no ̷ ("337) in font mdbchr8t!
+Missing character: There is no ̸ ("338) in font mdbchr8t!
+Missing character: There is no ̸ ("338) in font mdbchr8t!
+Missing character: There is no ﹨ ("FE68) in font mdbchr8t!
+
+LaTeX Warning: Reference `test' on page 3 undefined on input line 96.
+
+
+LaTeX Warning: Reference `test' on page 3 undefined on input line 96.
+
+
+LaTeX Warning: Reference `test' on page 1 undefined on input line 96.
+
+
+Package fontspec Warning: Font "STFangsong" does not contain requested Script
+(fontspec)                "CJK".
+
+
+Package fontspec Info: Could not resolve font "STFangsong/BI" (it probably
+(fontspec)             doesn't exist).
+
+
+Package fontspec Info: Could not resolve font "STFangsong/B" (it probably
+(fontspec)             doesn't exist).
+
+
+Package fontspec Info: Could not resolve font "STFangsong/I" (it probably
+(fontspec)             doesn't exist).
+
+LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 1
+01.
+(/usr/local/texlive/2024/texmf-dist/tex/latex/lm/t1lmtt.fd
+File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+
+Package fontspec Info: Font family 'STFangsong(0)' created for font
+(fontspec)             'STFangsong' with options [Script={CJK}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"STFangsong/OT:language=dflt;"
+(fontspec)             -  (m/fscn) with NFSS spec.: 
+
+
+! Missing $ inserted.
+<inserted text> 
+                $
+l.101 \verb | a|a \alpha
+                        
 ? 
 ! Emergency stop.
- ...                                              
-                                                  
-l.37                 \begin{itemize}
-                                    
-You're in trouble here.  Try typing  <return>  to proceed.
-If that doesn't work, type  X <return>  to quit.
+<inserted text> 
+                $
+l.101 \verb | a|a \alpha
+                        
+End of file on the terminal!
 
  
 Here is how much of TeX's memory you used:
- 11291 strings out of 474773
- 288588 string characters out of 5757723
- 1920839 words of memory out of 5000000
- 33325 multiletter control sequences out of 15000+600000
- 579755 words of font info for 62 fonts, out of 8000000 for 9000
+ 11557 strings out of 474773
+ 293916 string characters out of 5757723
+ 1927839 words of memory out of 5000000
+ 33526 multiletter control sequences out of 15000+600000
+ 604193 words of font info for 122 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 93i,2n,97p,3273b,361s stack positions out of 10000i,1000n,20000p,200000b,200000s
-No pages of output.
+ 93i,8n,97p,3273b,373s stack positions out of 10000i,1000n,20000p,200000b,200000s
+Output written on test.pdf (2 pages).

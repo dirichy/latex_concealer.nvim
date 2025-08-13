@@ -34,9 +34,9 @@
           \item
             \begin{itemize}
               \item
-                \begin{itemize}
-                  \item we can't nest too many lists.
-                \end{itemize}
+                % \begin{itemize}
+                %   \item we can't nest too many lists.
+                % \end{itemize}
             \end{itemize}
         \end{itemize}
     \end{itemize}
@@ -46,13 +46,14 @@
 \subsection{greek alphabet}
 \(\alpha\beta\gamma\delta\epsilon\varepsilon\zeta\eta\theta\vartheta\iota\kappa\lambda\mu\nu\xi\pi\varpi\rho\varrho\sigma\varsigma\tau\upsilon\phi\varphi\chi\psi\omega\Gamma\Delta\Theta\Lambda\Xi\Pi\Sigma\Upsilon\Phi\Psi\Omega\).
 
+\(\alpha \beta\)
 \subsection{remove backslash}
 \(\sin \cos \tan \cot \arcsin \gcd \deg \exp \sup \inf \d \ln \log \sgn \operatorname{xyz}\).
 
 \subsection{operators}
 \(\approx \cap \cdot \circ \cup \div \land \lor \mp \nabla \neg \odot \ominus \oplus \oslash \otimes \partial \pm \Re \Im \setminus \sqcap \sqcup \times \triangle \vee \wedge \amalg \coprod \rceil \asymp \lceil \lfloor \rfloor \langle \rangle \rightleftharpoons \).
 
-\(\mleft( \mright)\)
+\(\left( \right)\)
 \(\bigcap \bigcirc \bigcup \bigodot \bigoplus \bigotimes \bigsqcup \bigtriangledown \bigtriangleup \bigvee \bigwedge \int \oint \iint \oiint \iiint \oiiint \iiiint \idotsint \prod \sum \).
 
 \subsection{arrows}
@@ -67,15 +68,16 @@
 \subsection{fractions}
 If the fraction has only numbers, we will conceal it as a constant.
 Else, we will conceal it into three delims. Don't worry about nested fractions, the delims can use rainbow color.
-\(\frac{12345}{67890} \dfrac{-999}{-123} \tfrac{11}{22} \frac{a}{b} \frac{\alpha}{\beta} \frac{\frac{\frac{1}{2}}{\frac{3}{4}}}{\frac{\frac{5}{6}}{\frac{7}{8}}}\).
+\(\frac{12345}{67890} \dfrac{-999}{-123} \tfrac{11}{22} \frac{a}{c} \frac{\alpha}{\beta} \frac{\frac{\frac{1}{2}}{\frac{3}{4}}}{\frac{\frac{5}{6}}{\frac{7}{8}}}\).
 \(\frac {1}2 \frac {1} 2 \frac 1 2 \frac 12 \frac12\)
-\(\frac1{2}\)
+\( \frac{\frac{a}{c}}{\frac{c}{d}}\)
+\(\frac{a}{\mathbb{B}bb}\)
 \subsection{sqrt}
 Same as frac, there are three different methods to conceal sqrt.
-\(\sqrt[3]{2}\)
-\(\sqrt[2]{3}  \sqrt[\pi]{\mathrm{e}}\)
+\(\sqrt[3]{2} \sqrt[\frac{a}{b}]{\alpha}\)
+\(\sqrt{\frac{1}{2a}}\)
 \subsection{overline}
-\(\overline{a} \overline{b} \overline{c} \overline{abcde}  \overline{\pi} \tilde{a} \tilde{b} \tilde{A} \tilde{abc} \).
+\(\alpha \beta \sqrt{\beta} \overline{a} \overline{b} \overline{c} \overline{abcde}  \overline{\pi} \tilde{a} \tilde{b} \tilde{A} \tilde{bc} \).
 
 \subsection{mathfonts}
 \(\mathbb{ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890} \).
@@ -88,7 +90,7 @@ Same as frac, there are three different methods to conceal sqrt.
 For now, footnote will easily hide.
 We can insert \footnote{This is a footnote}{footnote} in paragraph.
 We can insert another \footnote{This is another footnote}{footnote} in paragraph.
-
+\(\prod\)
 \subsection{label and reference}
 \label{test} \ref{test} \eqref{test} \Cref{test}
 
@@ -99,13 +101,15 @@ script will not be concealed when not in mathmode, so you can use \_ in labels a
 \subsubsection{in math mode}
 We will conceal script into unicode script style.
 \(a_a a_1 a_2 a_{12} a_{aaa} a^1 a^2 a^a \)
+\(z^{z^{z^{z^{z}}}}\)
 
 but some character has no script style, so they will not be concealed.
 \(a^\alpha a^\gamma a^{-\alpha} a_\phi a_b\)
 \subsection{Modifier command}
 \subsubsection{not}
-\(\not ax b\)
-\subsubsection{accents}
+\(\not ax b \not \equiv \not \in\)
+\(\not{a}\)
+\subsubsection{accents }
 \"a \`b
 \begin{equation}
   a_1

@@ -1,8 +1,11 @@
 local M = {}
 local extmark = require("latex_concealer.extmark")
 local util = require("latex_concealer.util")
+local parser = require("latex_concealer.parser")
+local LNode = require("latex_concealer.lnode")
 local highlight = extmark.config.highlight
 local counter = require("latex_concealer.counter")
+local Grid = require("latex_concealer.grid")
 local concealers = {
 	font = function(buffer, node, filter, hilight, opts)
 		opts = opts or {}
@@ -21,9 +24,7 @@ local concealers = {
 		if type(filter) == "table" then
 			local fil_table = filter
 			filter = function(str)
-				return str:gsub("(\\[a-zA-Z]*)", function(atom)
-					return fil_table[atom]
-				end):gsub("(.)", function(atom)
+				return str:gsub("(.)", function(atom)
 					return fil_table[atom]
 				end)
 			end
@@ -44,7 +45,7 @@ local concealers = {
 		if not util.get_if(buffer, "mmode") then
 			return
 		end
-		local arg_node = node:field("superscript")[1] or node:field("subscript")[1]
+		local arg_node = node:field("script")[1]
 		if not arg_node then
 			return
 		end
@@ -61,7 +62,9 @@ local concealers = {
 				return letter
 			end
 		end)
-		return flag and extmark.multichar_conceal(buffer, { node = node }, { text, hilight }) or false
+		return flag
+				and extmark.multichar_conceal(buffer, { node = arg_node, offset = { 0, -1, 0, 0 } }, { text, hilight })
+			or false
 	end,
 	delim = setmetatable({
 		[1] = function(buffer, node, virt_text, include_optional)
@@ -189,9 +192,25 @@ end
 
 M.font = function(filter, hl)
 	hl = hl or highlight.default
-	return function(buffer, node)
-		return concealers.font(buffer, node, filter, hl)
-	end
+	return {
+		after = function(buffer, node)
+			return concealers.font(buffer, node, filter, hl)
+		end,
+		grid = function(buffer, node)
+			local arg = node:field("arg")[1]
+			if not arg then
+				return
+			end
+			arg = M.node2grid(buffer, LNode.remove_bracket(arg))
+			for _, v in ipairs(arg.data) do
+				for _, vv in ipairs(v) do
+					vv[1] = string.gsub(vv[1], "[%z\1-\127\194-\244][\128-\191]*", filter)
+					vv[2] = hl or vv[2]
+				end
+			end
+			return arg
+		end,
+	}
 end
 
 M.conceal = function(text, hl)
@@ -217,7 +236,7 @@ end
 
 M.script = function(filter, hl)
 	return function(buffer, node)
-		return concealers.script(buffer, node, filter, hl)
+		concealers.script(buffer, node, filter, hl)
 	end
 end
 
@@ -232,6 +251,14 @@ M.modify_next_char = function(modifier, hl, force_hl)
 	hl = hl or highlight.default
 	return {
 		narg = 1,
+		grid = function(buffer, node)
+			local arg1 = node:field("arg")[1]
+			arg1 = LNode.remove_bracket(arg1)
+			local g = M.node2grid(buffer, arg1)
+			local text = g.data[1][1][1]
+			local hi = g.data[1][1][2] or hl
+			return Grid:new({ modifier(text), hi })
+		end,
 		after = function(buffer, node)
 			local arg1 = node:field("arg")[1]
 			local a, b, c, d = node:range()
@@ -266,5 +293,13 @@ M.modify_next_char = function(modifier, hl, force_hl)
 		end,
 	}
 end
+
+---@param buffer integer
+---@param node LNode
+---@return Grid
+function M.node2grid(buffer, node) end
+---@param buffer integer
+---@param node LNode
+function M.default_grid_processor(buffer, node) end
 
 return M

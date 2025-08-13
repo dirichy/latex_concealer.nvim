@@ -1,4 +1,4 @@
-local util = require("latex_snip.conditions.util")
+local util = require("latex_concealer.conditions.util")
 local M = {}
 function M.in_text()
 	local node = util.get_node_at_cursor()
@@ -34,7 +34,7 @@ function M._in_math()
 		if util.TEXT_NODES[node:type()] then
 			return false
 		elseif util.MATH_NODES[node:type()] then
-			return true
+			return node
 		end
 		node = util.node_parent(node)
 	end

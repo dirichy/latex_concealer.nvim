@@ -4,15 +4,11 @@
 ---@field _field table <string,LNode[]>
 ---@field _childrens LNode[]
 ---@field _type string
-local _LNode = setmetatable({
+local _LNode = {
 	_field = {},
 	_childrens = {},
 	_type = "",
-}, {
-	__tostring = function()
-		return "LNode"
-	end,
-})
+}
 _LNode.__index = _LNode
 
 --- Returns a list of all the node's children that have the given field name.
@@ -254,6 +250,31 @@ function _LNode:add_child(child, field, index)
 		self._field[field] = self._field[field] or {}
 		table.insert(self._field[field], child)
 	end
+end
+
+function _LNode:shift_range(a, b, x, c, d, y)
+	if type(a) == "number" then
+		if y then
+			a = { a, b, x, c, d, y }
+		else
+			a = { a, b, b, c, d, d }
+		end
+	end
+	for index, value in ipairs(a) do
+		self._range[index] = self._range[index] + value
+	end
+end
+
+---1t
+function _LNode.remove_bracket(lnode)
+	local ntype = lnode:type()
+	if string.match(ntype, "^curly_group") or ntype == "brack_group" then
+		lnode = _LNode:new(lnode)
+		table.remove(lnode._childrens, 1)
+		table.remove(lnode._childrens)
+		lnode:shift_range(0, 1, 1, 0, -1, -1)
+	end
+	return lnode
 end
 
 return _LNode
