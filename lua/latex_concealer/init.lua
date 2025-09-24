@@ -74,13 +74,13 @@ end
 
 function M.refresh(buffer)
 	vim.schedule(function()
-		local t1 = vim.loop.hrtime()
+		-- local t1 = vim.loop.hrtime()
 		counter.reset_all(buffer)
 		extmark.delete_all(buffer)
 		util.reset_all(buffer)
 		M.conceal(buffer)
-		local t2 = vim.loop.hrtime()
-		print(t2 - t1)
+		-- local t2 = vim.loop.hrtime()
+		-- print(t2 - t1)
 	end)
 end
 

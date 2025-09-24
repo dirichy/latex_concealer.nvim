@@ -70,7 +70,6 @@ function Grid:new(data)
 end
 
 function Grid:show()
-	vim.print(self)
 	local buf = vim.api.nvim_create_buf(false, true)
 	vim.api.nvim_open_win(buf, true, {
 		relative = "editor",
@@ -160,7 +159,6 @@ function Grid.__add(a, b)
 	end
 	local min = math.min(-a.center, -b.center) + 1
 	local max = math.max(a.height - a.center, b.height - b.center)
-	vim.print(a.height, a.center, b.height, b.center, max)
 	for i = min, max do
 		c.data[i + c.center] = c.data[i + c.center] or c:line(i)
 		for _, v in ipairs(b:line(i)) do

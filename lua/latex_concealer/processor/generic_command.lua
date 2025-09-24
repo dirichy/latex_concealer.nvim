@@ -182,6 +182,7 @@ return {
 	["tilde"] = tilde,
 	["norm"] = concealer.delim("‖", "‖"),
 	["abs"] = concealer.delim("|", "|"),
+	["binom"] = concealer.delim("(", "C", ")"),
 	["sqrt"] = {
 		oarg = true,
 		narg = 2,

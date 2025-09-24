@@ -12,8 +12,56 @@ local function iter_remove_word_of_text(text_lnode)
 		return table.remove(text_lnode._childrens, 1)
 	end
 end
+M.map = {
+	generic_command = require("latex_concealer.parser.generic_command"),
+}
+
+M.parser = {
+	generic_command = function(buffer, node, opts)
+		local command_name = vim.treesitter.get_node_text(node:field("command")[1], buffer):sub(2, -1)
+		local parser = M.map.generic_command[command_name]
+		if not parser then
+			return
+		end
+		if type(parser) == "table" then
+			parser = M.parse_args(node, opts.field, parser.oarg, parser.narg)
+		else
+			parser = parser(node, opts.field, buffer)
+		end
+		return parser
+	end,
+	superscript = function(buf, snode, opts)
+		if snode:field("base")[1] then
+			return
+		end
+		local last_node = opts.last_node
+		local node1 = last_node[1]
+		local lnode = LNode:new(snode:type())
+		lnode:set_start(node1)
+		lnode:set_end(snode)
+		lnode:add_child(node1, "base")
+		lnode:add_child(snode:child(0), "operator")
+		lnode:add_child(snode:child(1), "script")
+		last_node[1] = lnode
+		return true
+	end,
+	subscript = function(buf, snode, opts)
+		if snode:field("base")[1] then
+			return
+		end
+		local last_node = opts.last_node
+		local node1 = last_node[1]
+		local lnode = LNode:new(snode:type())
+		lnode:set_start(node1)
+		lnode:set_end(snode)
+		lnode:add_child(node1, "base")
+		lnode:add_child(snode:child(0), "operator")
+		lnode:add_child(snode:child(1), "script")
+		last_node[1] = lnode
+		return true
+	end,
+}
 ---parse args of latex include optional and args without brackets
----@param buffer number
 ---@param command_node LNode The generic_command node to find it's args
 ---@param optional boolean If we should try to find an optional arg with brack
 ---@param number number? The number of args, including optional arg. default is 1.
@@ -126,7 +174,7 @@ function M.iter_children(buffer, pnode, parsers)
 	local node_stack = {}
 	local temp_node = {}
 	local iter = pnode:iter_children()
-	---@return LNode?,string
+	---@return LNode,string
 	local next_node = function()
 		if #node_stack > 0 then
 			local node = table.remove(node_stack)
@@ -134,6 +182,7 @@ function M.iter_children(buffer, pnode, parsers)
 		end
 		return iter()
 	end
+	---@return LNode,string
 	return function()
 		local node, field = next_node()
 		while node do
@@ -149,25 +198,20 @@ function M.iter_children(buffer, pnode, parsers)
 				end
 				node_type = node:type()
 			end
-			local pss = parsers[node_type]
-			while type(pss) == "function" do
-				pss = pss(buffer, node, { last_node = temp_node })
-			end
-			if type(pss) == "table" and (pss.oarg or pss.narg) then
-				pss = M.parse_args(node, field, pss.oarg, pss.narg)
-			end
-			if pss then
-				if type(pss) == "function" then
-					table.insert(parser_stack, pss)
+			local parser = M.parser[node_type]
+			parser = parser and parser(buffer, node, { last_node = temp_node, field = field })
+			if parser then
+				if type(parser) == "function" then
+					table.insert(parser_stack, parser)
 					node = nil
 				end
-				if pss == true then
+				if parser == true then
 					node = nil
 				end
 			end
 			local last_stacked_parser = parser_stack[#parser_stack]
 			while last_stacked_parser and node do
-				local try_parse = last_stacked_parser(node, field)
+				local try_parse = last_stacked_parser(node, field, buffer)
 				node, field = nil, nil
 				if try_parse then
 					table.remove(parser_stack)
@@ -213,5 +257,66 @@ function M.parse_node_childrens(buffer, pnode, parsers)
 		lnode:add_child(node, field)
 	end
 	return lnode
+end
+
+---@param parent Range4|LNode
+---@param child Range4|LNode
+---@return boolean
+local function RcoverR(parent, child)
+	local a1, a2, b1, b2, c1, c2, d1, d2
+	if parent[1] then
+		a1, b1, c1, d1 = unpack(parent)
+	else
+		a1, b1, c1, d1 = parent:range()
+	end
+	if child[1] then
+		a2, b2, c2, d2 = unpack(child)
+	else
+		a2, b2, c2, d2 = child:range()
+	end
+	return (a1 < a2 or a1 == a2 and b1 <= b2) and (c2 < c1 or c2 == c1 and d2 <= d1)
+end
+--- get all node cover the range as an array, aseding.
+---@param buffer integer
+---@param range Range4|LNode|nil
+---@param root LNode if provided, will only find all Descendants of root.
+function M.get_node(range, buffer, root, parsers)
+	buffer = buffer or vim.api.nvim_win_get_buf(0)
+	if not range then
+		local a, b = unpack(vim.api.nvim_win_get_cursor(0))
+		a = a - 1
+		range = { a, b, a, b + 1 }
+	end
+	if not root then
+		if vim.api.nvim_buf_is_loaded(buffer) then
+			local tree = vim.treesitter.get_parser(buffer, "latex")
+			if tree and tree:trees() and tree:trees()[1] then
+				root = tree:trees()[1]:root()
+			end
+		else
+			return
+		end
+	end
+	if not RcoverR(root, range) then
+		return
+	end
+	local result = { root }
+	local cur_node = root
+	while cur_node do
+		local flag = false
+		for node, _ in M.iter_children(buffer, cur_node, parsers) do
+			if RcoverR(node, range) then
+				cur_node = node
+				flag = true
+				break
+			end
+		end
+		if flag then
+			table.insert(result, cur_node)
+		else
+			break
+		end
+	end
+	return result
 end
 return M
