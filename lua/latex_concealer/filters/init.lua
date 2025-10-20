@@ -1,5 +1,5 @@
 local M = {}
-local mathfont = require("latex_concealer.filters.mathfont")
+local mathfont = require("nvimtex.latex.mathfont")
 local script = require("latex_concealer.filters.script")
 local utf8 = require("latex_concealer.utf8")
 local Grid = require("latex_concealer.grid")
